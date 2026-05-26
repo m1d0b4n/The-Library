@@ -24,4 +24,4 @@
 
 - Repo : https://github.com/m1d0b4n/The-Library
 - Project board : onglet **Projects** sur le repo
-- Sujet du prof : [`sujet-projet/variante-d.md`](../sujet-projet/variante-d.md)
+- Sujet du prof : [`project-subject/variante-d.md`](../project-subject/variante-d.md)

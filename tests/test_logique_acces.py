@@ -108,3 +108,52 @@ def test_modification_livre_reserve_bloquee(client):
     with client.application.app_context():
         livre = Livre.query.filter_by(titre="Non Modifiable").first()
         assert livre.auteur == "Auteur"  # inchangé
+
+
+# --- Bugfix #36 : propriété des livres ---
+
+def test_proprio_peut_modifier(client):
+    """Le créateur peut modifier son livre."""
+    _register_login(client, "alice@x.com")
+    _add_livre(client, "Livre Alice")
+    r = client.post("/catalogue/Livre Alice/modifier", data={
+        "auteur": "Nouveau", "annee_publication": "2010"
+    }, follow_redirects=True)
+    assert "Livre modifié" in r.data.decode()
+
+
+def test_autre_user_ne_peut_pas_modifier(client):
+    """Un autre user ne peut pas modifier le livre d'Alice."""
+    _register_login(client, "alice@x.com")
+    _add_livre(client, "Livre Alice 2")
+    client.post("/logout")
+
+    _register_login(client, "bob@x.com")
+    r = client.post("/catalogue/Livre Alice 2/modifier", data={
+        "auteur": "Hacker", "annee_publication": "2010"
+    }, follow_redirects=True)
+    assert "ne vous appartient pas" in r.data.decode()
+    with client.application.app_context():
+        livre = Livre.query.filter_by(titre="Livre Alice 2").first()
+        assert livre.auteur == "Auteur"  # inchangé
+
+
+def test_autre_user_ne_peut_pas_supprimer(client):
+    """Un autre user ne peut pas supprimer le livre d'Alice."""
+    _register_login(client, "alice@x.com")
+    _add_livre(client, "Livre Alice 3")
+    client.post("/logout")
+
+    _register_login(client, "bob@x.com")
+    r = client.post("/catalogue/Livre Alice 3/supprimer", follow_redirects=True)
+    assert "ne vous appartient pas" in r.data.decode()
+    with client.application.app_context():
+        assert Livre.query.filter_by(titre="Livre Alice 3").first() is not None
+
+
+def test_proprio_peut_supprimer(client):
+    """Le créateur peut supprimer son propre livre."""
+    _register_login(client, "alice@x.com")
+    _add_livre(client, "Livre A Supprimer")
+    r = client.post("/catalogue/Livre A Supprimer/supprimer", follow_redirects=True)
+    assert "supprim" in r.data.decode()

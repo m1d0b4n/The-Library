@@ -102,7 +102,7 @@ def ajouter_livre():
         elif Livre.query.filter_by(titre=titre).first():
             flash("Un livre avec ce titre existe déjà.", "error")
         else:
-            db.session.add(Livre(titre=titre, auteur=auteur, annee_publication=annee))
+            db.session.add(Livre(titre=titre, auteur=auteur, annee_publication=annee, created_by=current_user.email))
             db.session.commit()
             flash(f"« {titre} » ajouté avec succès.", "success")
             return redirect(url_for("pages.liste_livres"))
@@ -115,6 +115,9 @@ def modifier_livre(titre):
     livre = Livre.query.filter_by(titre=titre).first_or_404()
     if not livre.disponible:
         flash("Impossible de modifier un livre réservé.", "error")
+        return redirect(url_for("pages.detail_livre", titre=titre))
+    if livre.created_by and livre.created_by != current_user.email:
+        flash("Vous ne pouvez pas modifier un livre qui ne vous appartient pas.", "error")
         return redirect(url_for("pages.detail_livre", titre=titre))
     if request.method == "POST":
         auteur = request.form.get("auteur", "").strip()
@@ -143,6 +146,9 @@ def supprimer_livre(titre):
     livre = Livre.query.filter_by(titre=titre).first_or_404()
     if not livre.disponible:
         flash("Impossible de supprimer un livre réservé.", "error")
+        return redirect(url_for("pages.detail_livre", titre=titre))
+    if livre.created_by and livre.created_by != current_user.email:
+        flash("Vous ne pouvez pas supprimer un livre qui ne vous appartient pas.", "error")
         return redirect(url_for("pages.detail_livre", titre=titre))
     db.session.delete(livre)
     db.session.commit()

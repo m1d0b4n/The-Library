@@ -14,6 +14,8 @@ build/
 
 # Pytest
 .pytest_cache/
+.coverage
+htmlcov/
 
 # VS Code
 .vscode/

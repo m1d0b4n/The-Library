@@ -1,14 +1,17 @@
 from flask import Flask
 from models.livre import db
+import os
 
 
 def create_app(config=None):
     app = Flask(__name__)
 
     # Configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///bibliotheque.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+        "DATABASE_URL", "sqlite:///bibliotheque.db"
+    )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SECRET_KEY"] = "change-this-in-production"
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", os.urandom(32))
 
     if config:
         app.config.update(config)
@@ -31,5 +34,6 @@ def create_app(config=None):
 
 
 if __name__ == "__main__":
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
     app = create_app()
-    app.run(debug=True)
+    app.run(debug=debug)

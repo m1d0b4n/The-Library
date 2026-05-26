@@ -12,6 +12,7 @@ class Livre(db.Model):
     annee_publication = db.Column(db.Integer, nullable=False)
     disponible = db.Column(db.Boolean, default=True, nullable=False)
     reserve_par = db.Column(db.String(200), nullable=True, default=None)
+    created_by = db.Column(db.String(200), nullable=True, default=None)
 
     def to_dict(self):
         return {

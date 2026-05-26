@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Admin — The Library{% endblock %}
+
+{% block content %}
+<div class="animate-fade-in flex items-center gap-3 mb-8">
+  <div class="bg-indigo-100 rounded-xl p-2.5">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    </svg>
+  </div>
+  <div>
+    <h2 class="text-2xl font-bold text-gray-900">Dashboard admin</h2>
+    <p class="text-sm text-gray-400">Connecté en tant que {{ current_user.email }}</p>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+  <div class="animate-slide-up bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4">
+    <div class="bg-indigo-100 rounded-xl p-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    </div>
+    <div>
+      <p class="text-3xl font-bold text-gray-900">{{ nb_livres }}</p>
+      <p class="text-sm text-gray-400">Livres</p>
+    </div>
+  </div>
+  <div class="animate-slide-up-delay bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4">
+    <div class="bg-green-100 rounded-xl p-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </div>
+    <div>
+      <p class="text-3xl font-bold text-gray-900">{{ nb_users }}</p>
+      <p class="text-sm text-gray-400">Utilisateurs</p>
+    </div>
+  </div>
+  <div class="animate-slide-up-delay-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4">
+    <div class="bg-red-100 rounded-xl p-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+    </div>
+    <div>
+      <p class="text-3xl font-bold text-gray-900">{{ nb_reserves }}</p>
+      <p class="text-sm text-gray-400">Réservations actives</p>
+    </div>
+  </div>
+</div>
+
+<!-- Liens rapides -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <a href="{{ url_for('admin.livres') }}"
+     class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div class="bg-indigo-100 rounded-xl p-3 group-hover:bg-indigo-200 transition-colors duration-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+    </div>
+    <div>
+      <p class="font-semibold text-gray-800">Gérer les livres</p>
+      <p class="text-sm text-gray-400">Supprimer n'importe quel livre</p>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300 ml-auto group-hover:text-indigo-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </a>
+  <a href="{{ url_for('admin.users') }}"
+     class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div class="bg-green-100 rounded-xl p-3 group-hover:bg-green-200 transition-colors duration-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    </div>
+    <div>
+      <p class="font-semibold text-gray-800">Gérer les utilisateurs</p>
+      <p class="text-sm text-gray-400">Rôles, suppressions</p>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300 ml-auto group-hover:text-green-400 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </a>
+</div>
+{% endblock %}

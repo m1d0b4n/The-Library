@@ -2,28 +2,60 @@
 {% block title %}Connexion — The Library{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-xl shadow p-8">
-  <h2 class="text-2xl font-bold text-indigo-700 mb-6">Connexion</h2>
-  <form method="POST" action="{{ url_for('pages.login') }}" class="space-y-4">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-      <input type="email" name="email" required
-             class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+<div class="max-w-md mx-auto">
+
+  <div class="animate-fade-in text-center mb-8">
+    <div class="flex justify-center mb-4">
+      <div class="bg-indigo-100 rounded-full p-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+      </div>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-      <input type="password" name="password" required
-             class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
-    </div>
-    <button type="submit"
-            class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
-      Se connecter
-    </button>
-  </form>
-  <p class="text-center text-sm text-gray-500 mt-4">
-    Pas encore de compte ?
-    <a href="{{ url_for('pages.register') }}" class="text-indigo-600 hover:underline">S'inscrire</a>
-  </p>
+    <h2 class="text-2xl font-bold text-gray-900">Bon retour !</h2>
+    <p class="text-gray-500 text-sm mt-1">Connectez-vous à votre compte.</p>
+  </div>
+
+  <div class="animate-slide-up bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <form method="POST" action="{{ url_for('pages.login') }}" class="space-y-5">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <input type="email" name="email" required
+                 class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1.5">Mot de passe</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <input type="password" name="password" required
+                 class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200" />
+        </div>
+      </div>
+      <button type="submit"
+              class="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+        </svg>
+        Se connecter
+      </button>
+    </form>
+    <p class="text-center text-sm text-gray-500 mt-6">
+      Pas encore de compte ?
+      <a href="{{ url_for('pages.register') }}" class="text-indigo-600 hover:underline font-medium">S'inscrire</a>
+    </p>
+  </div>
+
 </div>
 {% endblock %}

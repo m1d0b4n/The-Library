@@ -15,7 +15,32 @@ logger = logging.getLogger("the_library.pages")
 
 @pages_bp.route("/")
 def index():
-    return render_template("index.html")
+    from models.utilisateur import User
+    setup_needed = User.query.count() == 0
+    return render_template("index.html", setup_needed=setup_needed)
+
+
+@pages_bp.route("/setup", methods=["POST"])
+def setup():
+    if User.query.count() > 0:
+        from flask import abort
+        abort(403)
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "")
+    if not email or len(email) > 200:
+        flash("Email invalide.", "error")
+        return redirect(url_for("pages.index"))
+    if len(password) < 8:
+        flash("Mot de passe trop court (min. 8 caractères).", "error")
+        return redirect(url_for("pages.index"))
+    password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    admin = User(email=email, password_hash=password_hash, role="admin")
+    db.session.add(admin)
+    db.session.commit()
+    login_user(admin)
+    logger.info("Setup initial : admin cree %s (IP: %s)", email, request.remote_addr)
+    flash(f"Bienvenue ! Compte admin créé pour {email}.", "success")
+    return redirect(url_for("admin.dashboard"))
 
 
 # --- Auth ---

@@ -53,6 +53,7 @@ def create_app(config=None):
     from routes.reservations import reservations_bp
     from routes.auth import auth_bp
     from routes.pages import pages_bp
+    from routes.admin import admin_bp
 
     # Les routes API JSON sont exemptées du CSRF
     csrf.exempt(livres_bp)
@@ -63,6 +64,7 @@ def create_app(config=None):
     app.register_blueprint(reservations_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(pages_bp)
+    app.register_blueprint(admin_bp)
 
     # Création des tables si elles n'existent pas
     with app.app_context():

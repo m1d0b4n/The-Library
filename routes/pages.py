@@ -1,3 +1,5 @@
+import logging
+
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -6,6 +8,7 @@ from models.utilisateur import User
 from models.livre import Livre
 
 pages_bp = Blueprint("pages", __name__)
+logger = logging.getLogger("the_library.pages")
 
 
 # --- Accueil ---
@@ -27,7 +30,9 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and bcrypt.checkpw(password.encode(), user.password_hash.encode()):
             login_user(user)
+            logger.info("Connexion reussie : %s (IP: %s)", email, request.remote_addr)
             return redirect(url_for("pages.liste_livres"))
+        logger.warning("Echec connexion : %s (IP: %s)", email, request.remote_addr)
         flash("Email ou mot de passe incorrect.", "error")
     return render_template("auth/login.html")
 
@@ -49,6 +54,7 @@ def register():
             password_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
             db.session.add(User(email=email, password_hash=password_hash))
             db.session.commit()
+            logger.info("Inscription : %s (IP: %s)", email, request.remote_addr)
             flash("Compte créé ! Connectez-vous.", "success")
             return redirect(url_for("pages.login"))
     return render_template("auth/register.html")
@@ -57,6 +63,7 @@ def register():
 @pages_bp.route("/logout", methods=["POST"])
 @login_required
 def logout():
+    logger.info("Deconnexion : %s", current_user.email)
     logout_user()
     flash("Vous êtes déconnecté.", "success")
     return redirect(url_for("pages.index"))
@@ -133,6 +140,7 @@ def supprimer_livre(titre):
     livre = Livre.query.filter_by(titre=titre).first_or_404()
     db.session.delete(livre)
     db.session.commit()
+    logger.warning("Suppression livre : '%s' par %s", titre, current_user.email)
     flash(f"« {titre} » supprimé.", "success")
     return redirect(url_for("pages.liste_livres"))
 
@@ -147,6 +155,7 @@ def reserver(titre):
         livre.disponible = False
         livre.reserve_par = current_user.email
         db.session.commit()
+        logger.info("Reservation : '%s' par %s", titre, current_user.email)
         flash(f"« {titre} » réservé.", "success")
     return redirect(url_for("pages.detail_livre", titre=titre))
 

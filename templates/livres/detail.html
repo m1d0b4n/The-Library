@@ -19,6 +19,7 @@
   {% if current_user.is_authenticated %}
     {% if livre.disponible %}
     <form method="POST" action="{{ url_for('pages.reserver', titre=livre.titre) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <button type="submit"
               class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
         Réserver ce livre
@@ -26,6 +27,7 @@
     </form>
     {% elif livre.reserve_par == current_user.email %}
     <form method="POST" action="{{ url_for('pages.annuler', titre=livre.titre) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <button type="submit"
               class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300 transition">
         Annuler ma réservation
@@ -40,6 +42,7 @@
          class="text-sm text-indigo-600 hover:underline">Modifier</a>
       <form method="POST" action="{{ url_for('pages.supprimer_livre', titre=livre.titre) }}"
             onsubmit="return confirm('Supprimer ce livre ?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <button type="submit" class="text-sm text-red-500 hover:underline">Supprimer</button>
       </form>
     </div>

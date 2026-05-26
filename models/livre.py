@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
 
 db = SQLAlchemy()
 
@@ -12,6 +11,7 @@ class Livre(db.Model):
     auteur = db.Column(db.String(200), nullable=False)
     annee_publication = db.Column(db.Integer, nullable=False)
     disponible = db.Column(db.Boolean, default=True, nullable=False)
+    reserve_par = db.Column(db.String(200), nullable=True, default=None)
 
     def to_dict(self):
         return {
@@ -20,4 +20,5 @@ class Livre(db.Model):
             "auteur": self.auteur,
             "annee_publication": self.annee_publication,
             "disponible": self.disponible,
+            "reserve_par": self.reserve_par,
         }

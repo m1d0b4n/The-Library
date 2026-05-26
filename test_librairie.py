@@ -41,6 +41,16 @@ class TestBibliotheque(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.bibliotheque.rechercher_livre("12345")
 
+    def test_analyse_statique(self):
+        import ast
+        with open("librairie.py", "r", encoding="utf-8") as f:
+            tree = ast.parse(f.read())
+        
+        for node in ast.walk(tree):
+            # Check for dangerous functions like eval or exec
+            if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Name):
+                    self.assertNotIn(node.func.id, ['eval', 'exec'], "Fonction dangereuse trouvée !")
 
 if __name__ == '__main__':
     unittest.main()

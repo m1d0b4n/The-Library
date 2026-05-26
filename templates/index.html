@@ -2,12 +2,73 @@
 {% block title %}Accueil — The Library{% endblock %}
 
 {% block content %}
-<div class="text-center py-16">
-  <h1 class="text-4xl font-bold text-indigo-700 mb-4">Bienvenue à The Library</h1>
-  <p class="text-gray-500 text-lg mb-8">Échangez et partagez vos livres en ligne.</p>
-  <a href="{{ url_for('pages.liste_livres') }}"
-     class="bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
-    Voir les livres
-  </a>
+<div class="text-center py-20 px-4">
+
+  <!-- Icône centrale -->
+  <div class="animate-fade-in flex justify-center mb-6">
+    <div class="bg-indigo-100 rounded-full p-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    </div>
+  </div>
+
+  <h1 class="animate-slide-up text-5xl font-bold text-gray-900 mb-4 tracking-tight">
+    Bienvenue à <span class="text-indigo-600">The Library</span>
+  </h1>
+  <p class="animate-slide-up-delay text-gray-500 text-xl mb-10 max-w-md mx-auto leading-relaxed">
+    Échangez et partagez vos livres en ligne.
+  </p>
+
+  <div class="animate-slide-up-delay-2 flex items-center justify-center gap-4 flex-wrap">
+    <a href="{{ url_for('pages.liste_livres') }}"
+       class="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 transform">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+      Voir le catalogue
+    </a>
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('pages.register') }}"
+       class="inline-flex items-center gap-2 bg-white text-indigo-600 px-7 py-3 rounded-xl text-sm font-semibold border-2 border-indigo-200 hover:border-indigo-400 transition-all duration-200 hover:-translate-y-0.5 transform">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+      </svg>
+      Créer un compte
+    </a>
+    {% endif %}
+  </div>
+
+  <!-- Feature cards -->
+  <div class="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+    <div class="animate-slide-up bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+      <div class="bg-indigo-100 rounded-xl p-3 w-fit mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+        </svg>
+      </div>
+      <h3 class="font-semibold text-gray-800 mb-1">Large catalogue</h3>
+      <p class="text-sm text-gray-500">Parcourez des centaines de livres ajoutés par la communauté.</p>
+    </div>
+    <div class="animate-slide-up-delay bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+      <div class="bg-green-100 rounded-xl p-3 w-fit mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+      </div>
+      <h3 class="font-semibold text-gray-800 mb-1">Réservation simple</h3>
+      <p class="text-sm text-gray-500">Réservez un livre en un clic, annulez quand vous voulez.</p>
+    </div>
+    <div class="animate-slide-up-delay-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+      <div class="bg-purple-100 rounded-xl p-3 w-fit mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </div>
+      <h3 class="font-semibold text-gray-800 mb-1">Communauté</h3>
+      <p class="text-sm text-gray-500">Ajoutez vos propres livres et partagez-les avec les autres.</p>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

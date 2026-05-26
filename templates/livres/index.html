@@ -1,36 +1,81 @@
 {% extends "base.html" %}
-{% block title %}Livres — The Library{% endblock %}
+{% block title %}Catalogue — The Library{% endblock %}
 
 {% block content %}
-<div class="flex items-center justify-between mb-6">
-  <h2 class="text-2xl font-bold text-indigo-700">Catalogue</h2>
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <h2 class="text-2xl font-bold text-gray-900">Catalogue</h2>
+    <p class="text-sm text-gray-400 mt-0.5">{{ livres|length }} livre{{ 's' if livres|length != 1 else '' }}</p>
+  </div>
   {% if current_user.is_authenticated %}
   <a href="{{ url_for('pages.ajouter_livre') }}"
-     class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
-    + Ajouter un livre
+     class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 transform">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    Ajouter un livre
   </a>
   {% endif %}
 </div>
 
 {% if livres %}
-<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
   {% for livre in livres %}
-  <div class="bg-white rounded-xl shadow p-5 flex flex-col gap-2">
-    <div class="flex items-start justify-between">
-      <h3 class="font-semibold text-gray-800 text-base leading-tight">{{ livre.titre }}</h3>
+  <a href="{{ url_for('pages.detail_livre', titre=livre.titre) }}"
+     class="animate-slide-up group bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-3 hover:shadow-md hover:-translate-y-1 transition-all duration-300">
+    <div class="flex items-start justify-between gap-2">
+      <h3 class="font-semibold text-gray-800 text-base leading-snug group-hover:text-indigo-600 transition-colors duration-200">{{ livre.titre }}</h3>
       {% if livre.disponible %}
-        <span class="text-xs bg-green-100 text-green-700 rounded-full px-2 py-0.5 ml-2 whitespace-nowrap">Disponible</span>
+        <span class="flex-shrink-0 inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 rounded-full px-2.5 py-1 font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>Disponible
+        </span>
       {% else %}
-        <span class="text-xs bg-red-100 text-red-700 rounded-full px-2 py-0.5 ml-2 whitespace-nowrap">Réservé</span>
+        <span class="flex-shrink-0 inline-flex items-center gap-1 text-xs bg-red-100 text-red-700 rounded-full px-2.5 py-1 font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Réservé
+        </span>
       {% endif %}
     </div>
-    <p class="text-sm text-gray-500">{{ livre.auteur }} &mdash; {{ livre.annee_publication }}</p>
-    <a href="{{ url_for('pages.detail_livre', titre=livre.titre) }}"
-       class="mt-auto text-indigo-600 text-sm hover:underline">Voir le détail →</a>
-  </div>
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+      <span class="flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        {{ livre.auteur }}
+      </span>
+      <span class="flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        {{ livre.annee_publication }}
+      </span>
+    </div>
+    <div class="mt-auto flex items-center gap-1 text-indigo-500 text-sm font-medium group-hover:gap-2 transition-all duration-200">
+      Voir le détail
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+      </svg>
+    </div>
+  </a>
   {% endfor %}
 </div>
 {% else %}
-<p class="text-gray-400 text-center py-16">Aucun livre dans la bibliothèque pour l'instant.</p>
+<div class="text-center py-24">
+  <div class="flex justify-center mb-4">
+    <div class="bg-gray-100 rounded-full p-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    </div>
+  </div>
+  <p class="text-gray-400 font-medium">Aucun livre dans la bibliothèque pour l'instant.</p>
+  {% if current_user.is_authenticated %}
+  <a href="{{ url_for('pages.ajouter_livre') }}" class="mt-4 inline-flex items-center gap-2 text-indigo-600 text-sm hover:underline font-medium">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+    </svg>
+    Ajouter le premier livre
+  </a>
+  {% endif %}
+</div>
 {% endif %}
 {% endblock %}

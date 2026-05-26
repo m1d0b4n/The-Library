@@ -4,12 +4,10 @@
 
 | Membre | Rôle | GitHub |
 |--------|------|--------|
-| **Rudy** | Scrum Master + Lead repo | @m1d0b4n |
-| **Diego** | Revue de code + Refactoring | — |
-| **Ares** | Tests + Sécurité | — |
-| **Mohamed** | Spécifications + Déploiement | — |
-
-> Mettez à jour les pseudos GitHub de chacun.
+| **Rudy** | Scrum Master + Lead repo | [@m1d0b4n](https://github.com/m1d0b4n) |
+| **Diego** | Revue de code + Refactoring | [@diegodudn](https://github.com/diegodudn) |
+| **Ares** | Tests + Sécurité | [@Ecipwve](https://github.com/Ecipwve) |
+| **Mohamed** | Spécifications + Déploiement | [@mouhamedG](https://github.com/mouhamedG) |
 
 ---
 

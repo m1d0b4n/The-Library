@@ -20,6 +20,27 @@ class TestBibliotheque(unittest.TestCase):
         self.assertEqual(self.livre1.annuler_reservation(), "La réservation de Le Petit Prince a été annulée.")
         self.assertEqual(self.livre1.annuler_reservation(), "Le Petit Prince n'est pas réservé.")
 
+    def test_limite_titre_vide(self):
+        livre_vide = Livre("", "", None)
+        self.bibliotheque.ajouter_livre(livre_vide)
+        self.assertIn("", self.bibliotheque.lister_livres())
+
+    def test_injection_xss(self):
+        livre_xss = Livre("<script>alert('XSS')</script>", "Attaquant", 2023)
+        self.bibliotheque.ajouter_livre(livre_xss)
+        self.assertIn("<script>alert('XSS')</script>", self.bibliotheque.lister_livres())
+
+    def test_recherche_inexistante(self):
+        resultat = self.bibliotheque.rechercher_livre("Livre Inconnu")
+        self.assertIsNone(resultat)
+
+    def test_type_invalide(self):
+        livre_int = Livre(12345, "Auteur", 2021)
+        self.bibliotheque.ajouter_livre(livre_int)
+        # Ceci causera un crash AttributeError car int n'a pas de methode .lower()
+        with self.assertRaises(AttributeError):
+            self.bibliotheque.rechercher_livre("12345")
+
 
 if __name__ == '__main__':
     unittest.main()

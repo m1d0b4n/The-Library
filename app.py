@@ -27,7 +27,7 @@ def create_app(config=None):
     @login_manager.user_loader
     def load_user(user_id):
         from models.utilisateur import User
-        return User.query.get(int(user_id))
+        return db.session.get(User, int(user_id))
 
     @login_manager.unauthorized_handler
     def unauthorized():
@@ -38,10 +38,12 @@ def create_app(config=None):
     from routes.livres import livres_bp
     from routes.reservations import reservations_bp
     from routes.auth import auth_bp
+    from routes.pages import pages_bp
 
     app.register_blueprint(livres_bp)
     app.register_blueprint(reservations_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(pages_bp)
 
     # Création des tables si elles n'existent pas
     with app.app_context():

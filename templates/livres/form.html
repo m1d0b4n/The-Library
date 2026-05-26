@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{% if livre %}Modifier{% else %}Ajouter{% endif %} un livre — The Library{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white rounded-xl shadow p-8">
+  <h2 class="text-2xl font-bold text-indigo-700 mb-6">
+    {% if livre %}Modifier « {{ livre.titre }} »{% else %}Ajouter un livre{% endif %}
+  </h2>
+  <form method="POST"
+        action="{% if livre %}{{ url_for('pages.modifier_livre', titre=livre.titre) }}{% else %}{{ url_for('pages.ajouter_livre') }}{% endif %}"
+        class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
+      <input type="text" name="titre" required maxlength="200"
+             value="{{ livre.titre if livre else '' }}"
+             {% if livre %}readonly class="w-full border rounded-lg px-3 py-2 text-sm bg-gray-50"
+             {% else %}class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"{% endif %} />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Auteur</label>
+      <input type="text" name="auteur" required maxlength="200"
+             value="{{ livre.auteur if livre else '' }}"
+             class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Année de publication</label>
+      <input type="number" name="annee_publication" required min="1000" max="2100"
+             value="{{ livre.annee_publication if livre else '' }}"
+             class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" />
+    </div>
+    <div class="flex gap-3 pt-2">
+      <button type="submit"
+              class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+        {% if livre %}Enregistrer{% else %}Ajouter{% endif %}
+      </button>
+      <a href="{{ url_for('pages.liste_livres') }}"
+         class="px-5 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

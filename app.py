@@ -38,10 +38,12 @@ def create_app(config=None):
     from routes.livres import livres_bp
     from routes.reservations import reservations_bp
     from routes.auth import auth_bp
+    from routes.pages import pages_bp
 
     app.register_blueprint(livres_bp)
     app.register_blueprint(reservations_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(pages_bp)
 
     # Création des tables si elles n'existent pas
     with app.app_context():

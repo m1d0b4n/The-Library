@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ livre.titre }} — The Library{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('pages.liste_livres') }}" class="text-indigo-600 text-sm hover:underline">← Retour au catalogue</a>
+
+<div class="bg-white rounded-xl shadow p-8 mt-4 max-w-2xl">
+  <div class="flex items-start justify-between mb-2">
+    <h2 class="text-2xl font-bold text-gray-800">{{ livre.titre }}</h2>
+    {% if livre.disponible %}
+      <span class="text-sm bg-green-100 text-green-700 rounded-full px-3 py-1">Disponible</span>
+    {% else %}
+      <span class="text-sm bg-red-100 text-red-700 rounded-full px-3 py-1">Réservé</span>
+    {% endif %}
+  </div>
+  <p class="text-gray-500 mb-1">Auteur : <span class="text-gray-700 font-medium">{{ livre.auteur }}</span></p>
+  <p class="text-gray-500 mb-6">Année : <span class="text-gray-700 font-medium">{{ livre.annee_publication }}</span></p>
+
+  {% if current_user.is_authenticated %}
+    {% if livre.disponible %}
+    <form method="POST" action="{{ url_for('pages.reserver', titre=livre.titre) }}">
+      <button type="submit"
+              class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+        Réserver ce livre
+      </button>
+    </form>
+    {% elif livre.reserve_par == current_user.email %}
+    <form method="POST" action="{{ url_for('pages.annuler', titre=livre.titre) }}">
+      <button type="submit"
+              class="bg-gray-200 text-gray-700 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-gray-300 transition">
+        Annuler ma réservation
+      </button>
+    </form>
+    {% else %}
+    <p class="text-sm text-gray-400">Ce livre est réservé par quelqu'un d'autre.</p>
+    {% endif %}
+
+    <div class="mt-6 flex gap-3 border-t pt-4">
+      <a href="{{ url_for('pages.modifier_livre', titre=livre.titre) }}"
+         class="text-sm text-indigo-600 hover:underline">Modifier</a>
+      <form method="POST" action="{{ url_for('pages.supprimer_livre', titre=livre.titre) }}"
+            onsubmit="return confirm('Supprimer ce livre ?')">
+        <button type="submit" class="text-sm text-red-500 hover:underline">Supprimer</button>
+      </form>
+    </div>
+  {% else %}
+  <p class="text-sm text-gray-400"><a href="{{ url_for('pages.login') }}" class="text-indigo-600 hover:underline">Connectez-vous</a> pour réserver ce livre.</p>
+  {% endif %}
+</div>
+{% endblock %}

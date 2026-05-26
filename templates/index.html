@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Accueil — The Library{% endblock %}
+
+{% block content %}
+<div class="text-center py-16">
+  <h1 class="text-4xl font-bold text-indigo-700 mb-4">Bienvenue à The Library</h1>
+  <p class="text-gray-500 text-lg mb-8">Consultez et réservez vos livres en ligne.</p>
+  <a href="{{ url_for('pages.liste_livres') }}"
+     class="bg-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+    Voir les livres
+  </a>
+</div>
+{% endblock %}

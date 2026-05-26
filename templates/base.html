@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
   <title>{% block title %}The Library{% endblock %}</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -17,6 +18,7 @@
         {% if current_user.is_authenticated %}
           <span class="text-indigo-200">{{ current_user.email }}</span>
           <form method="POST" action="{{ url_for('pages.logout') }}" class="inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button type="submit" class="hover:underline">Déconnexion</button>
           </form>
         {% else %}

@@ -9,6 +9,7 @@
   <form method="POST"
         action="{% if livre %}{{ url_for('pages.modifier_livre', titre=livre.titre) }}{% else %}{{ url_for('pages.ajouter_livre') }}{% endif %}"
         class="space-y-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
       <input type="text" name="titre" required maxlength="200"

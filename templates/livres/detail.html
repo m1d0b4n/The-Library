@@ -38,8 +38,12 @@
     {% endif %}
 
     <div class="mt-6 flex gap-3 border-t pt-4">
+      {% if livre.disponible %}
       <a href="{{ url_for('pages.modifier_livre', titre=livre.titre) }}"
          class="text-sm text-indigo-600 hover:underline">Modifier</a>
+      {% else %}
+      <span class="text-sm text-gray-300">Modification impossible (livre réservé)</span>
+      {% endif %}
       {% if livre.disponible %}
       <form method="POST" action="{{ url_for('pages.supprimer_livre', titre=livre.titre) }}"
             onsubmit="return confirm('Supprimer ce livre ?')">

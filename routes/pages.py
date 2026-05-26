@@ -113,6 +113,9 @@ def ajouter_livre():
 @login_required
 def modifier_livre(titre):
     livre = Livre.query.filter_by(titre=titre).first_or_404()
+    if not livre.disponible:
+        flash("Impossible de modifier un livre réservé.", "error")
+        return redirect(url_for("pages.detail_livre", titre=titre))
     if request.method == "POST":
         auteur = request.form.get("auteur", "").strip()
         try:

@@ -82,3 +82,29 @@ def test_suppression_sans_auth_bloquee(client):
     """Un user non connecté ne peut pas supprimer (401)."""
     r = client.post("/catalogue/Dune/supprimer")
     assert r.status_code == 401
+
+
+# --- Bugfix : modification livre réservé ---
+
+def test_modification_livre_libre_ok(client):
+    """Un livre disponible peut être modifié."""
+    _register_login(client, "alice@x.com")
+    _add_livre(client, "Modifiable")
+    r = client.post("/catalogue/Modifiable/modifier", data={
+        "auteur": "Nouvel Auteur", "annee_publication": "2010"
+    }, follow_redirects=True)
+    assert "Livre modifié" in r.data.decode()
+
+
+def test_modification_livre_reserve_bloquee(client):
+    """Un livre réservé ne peut pas être modifié."""
+    _register_login(client, "alice@x.com")
+    _add_livre(client, "Non Modifiable")
+    client.post("/catalogue/Non Modifiable/reserver")
+    r = client.post("/catalogue/Non Modifiable/modifier", data={
+        "auteur": "Hacker", "annee_publication": "2010"
+    }, follow_redirects=True)
+    assert "Impossible de modifier" in r.data.decode()
+    with client.application.app_context():
+        livre = Livre.query.filter_by(titre="Non Modifiable").first()
+        assert livre.auteur == "Auteur"  # inchangé

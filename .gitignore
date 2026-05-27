@@ -26,3 +26,7 @@ htmlcov/
 # Base de données SQLite
 *.db
 *.sqlite3
+
+# Images uploadées par les utilisateurs (fichiers générés, non versionnés)
+static/uploads/livres/*
+!static/uploads/livres/.gitkeep

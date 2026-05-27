@@ -245,11 +245,12 @@ def modifier_livre(titre):
     if not livre.disponible:
         flash("Impossible de modifier un livre réservé.", "error")
         return redirect(url_for("pages.detail_livre", titre=titre))
-    if livre.created_by and livre.created_by != current_user.email:
+    if not current_user.is_admin and livre.created_by and livre.created_by != current_user.email:
         flash("Vous ne pouvez pas modifier un livre qui ne vous appartient pas.", "error")
         return redirect(url_for("pages.detail_livre", titre=titre))
     today = date.today().isoformat()
     if request.method == "POST":
+        titre_nouveau = request.form.get("titre", "").strip()
         auteur = request.form.get("auteur", "").strip()
         date_pub = request.form.get("annee_publication", "").strip()
         try:
@@ -260,16 +261,21 @@ def modifier_livre(titre):
             flash("Date de publication invalide.", "error")
             return render_template("livres/form.html", livre=livre, today=today)
 
-        if not auteur or len(auteur) > 200:
+        if not titre_nouveau or len(titre_nouveau) > 200:
+            flash("Titre requis (max 200 caractères).", "error")
+        elif not auteur or len(auteur) > 200:
             flash("Auteur requis (max 200 caractères).", "error")
         elif annee < 1000 or annee > date.today().year:
             flash(f"Année hors limites (1000-{date.today().year}).", "error")
+        elif titre_nouveau != livre.titre and Livre.query.filter_by(titre=titre_nouveau).first():
+            flash("Un livre avec ce titre existe déjà.", "error")
         else:
             try:
                 nouvelle_image = _sauvegarder_image(request.files.get("image"))
             except ValueError as e:
                 flash(str(e), "error")
                 return render_template("livres/form.html", livre=livre, today=today)
+            livre.titre = titre_nouveau
             livre.auteur = auteur
             livre.annee_publication = annee
             if nouvelle_image:

@@ -125,9 +125,10 @@ Une PR fermée = une issue fermée automatiquement.
 ─────────────────────────────────────────────────────────────
 
 Sur la partie sécurité, nous avons couvert
-cinq axes principaux : hachage bcrypt,
+six axes principaux : hachage bcrypt,
 protection CSRF globale, validation des fichiers uploadés,
-contrôle de rôle par décorateur, et whitelist d'extensions.
+contrôle de rôle par décorateur, whitelist d'extensions,
+et headers de sécurité HTTP appliqués globalement.
 
 Les diapositives suivantes détaillent chaque point.
 
@@ -247,7 +248,7 @@ Un fichier renommé avec la mauvaise extension est détecté
 et rejeté, indépendamment de ce qu'indique l'extension.
 
 ─────────────────────────────────────────────────────────────
-  SLIDE 16 — ANALYSE STATIQUE BANDIT               [ARES ~1 min]
+  SLIDE 16 — ANALYSE STATIQUE & AUDIT DYNAMIQUE    [ARES ~1.5 min]
 ─────────────────────────────────────────────────────────────
 
 Bandit est l'outil OWASP d'analyse statique pour Python.
@@ -260,6 +261,25 @@ ni Low, ni Medium, ni High.
 588 lignes analysées, zéro ligne ignorée avec #nosec.
 Commande : bandit -r routes models app.py.
 L'analyse est complète et transparente.
+
+Mais l'analyse statique ne suffit pas.
+Nous avons aussi lancé l'OWASP Pentest Toolkit —
+un scanner dynamique qui audite l'application en fonctionnement,
+comme le ferait un pentesteur.
+
+Il a détecté un problème réel : les headers de sécurité HTTP
+n'étaient pas appliqués sur les pages HTML.
+Sans X-Frame-Options : un site tiers peut intégrer
+l'application dans une iframe invisible — clickjacking.
+Sans X-Content-Type-Options : un fichier malveillant
+renommé peut être exécuté par le navigateur — MIME sniffing.
+Sans Content-Security-Policy sur les pages HTML :
+les scripts injectés s'exécutent librement.
+
+Correction immédiate : le hook après-requête
+a été déplacé dans app.py au niveau global —
+les headers couvrent maintenant toutes les routes
+HTML et API, pas seulement les endpoints JSON.
 
 ─────────────────────────────────────────────────────────────
   SLIDE 17 — TESTS : STRATÉGIE                     [ARES ~1 min]
@@ -470,7 +490,7 @@ MOHAMED : Et pour tout ce qui concerne les specs ou la méthodo Agile.
 
   RUDY    : Slides 1-5, 19 (~7 min) + démo narration (~4 min) = ~11 min
   DIEGO   : Slides 6-7, 9-10, 12 (~6 min) + démo archi (~2 min) = ~8 min
-  ARES    : Slides 8, 11, 13-18 (~7 min) + démo sécurité (~2 min) = ~9 min
+  ARES    : Slides 8, 11, 13-18 (~7.5 min) + démo sécurité (~2 min) = ~9.5 min
   MOHAMED : Slides 20, 21, 22 (~3 min) = ~3 min
 
 ════════════════════════════════════════════════════════════════

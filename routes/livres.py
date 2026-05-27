@@ -24,17 +24,7 @@ def _valider_champs(titre, auteur, annee):
         raise ValueError(f"L'année doit être comprise entre {ANNEE_MIN} et {ANNEE_MAX}.")
 
 
-def _headers_securite(response):
-    """Ajoute les headers de sécurité HTTP (CS04)."""
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Content-Security-Policy"] = "default-src 'self'"
-    return response
-
-
-@livres_bp.after_request
-def after_request(response):
-    return _headers_securite(response)
+# Headers de sécurité gérés globalement dans app.py (after_request global)
 
 
 @livres_bp.get("/")

@@ -70,6 +70,19 @@ def create_app(config=None):
     app.register_blueprint(pages_bp)
     app.register_blueprint(admin_bp)
 
+    # Headers de sécurité HTTP globaux (CS04) — couvre toutes les routes HTML et API
+    @app.after_request
+    def ajouter_headers_securite(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; "
+            "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; "
+            "img-src 'self' data:;"
+        )
+        return response
+
     # Gestionnaire d'erreur 413 : fichier trop volumineux
     @app.errorhandler(413)
     def fichier_trop_grand(e):

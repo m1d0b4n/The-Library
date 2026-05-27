@@ -230,10 +230,9 @@
       }, true);
 
       document.getElementById('confirm-ok').addEventListener('click', function() {
+        var form = pendingForm;
         closeModal();
-        if (pendingForm) {
-          var form = pendingForm;
-          pendingForm = null;
+        if (form) {
           form.removeAttribute('data-confirm');
           form.requestSubmit();
         }

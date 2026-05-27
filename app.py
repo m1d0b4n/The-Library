@@ -24,7 +24,7 @@ def create_app(config=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", os.urandom(32))
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads", "livres")
-    app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 Mo max
+    app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 Mo max avant compression
 
     if config:
         app.config.update(config)
@@ -69,6 +69,16 @@ def create_app(config=None):
     app.register_blueprint(auth_bp)
     app.register_blueprint(pages_bp)
     app.register_blueprint(admin_bp)
+
+    # Gestionnaire d'erreur 413 : fichier trop volumineux
+    @app.errorhandler(413)
+    def fichier_trop_grand(e):
+        from flask import flash, redirect, request, url_for
+        flash("L'image dépasse la taille maximale autorisée (10 Mo).", "danger")
+        referrer = request.referrer
+        if referrer:
+            return redirect(referrer)
+        return redirect(url_for("pages.catalogue"))
 
     # Création des tables si elles n'existent pas
     with app.app_context():

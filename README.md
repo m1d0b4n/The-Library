@@ -49,7 +49,6 @@ source venv/bin/activate  # Linux / macOS
 
 ```bash
 pip install -r requirements.txt
-pip install pillow
 ```
 
 ### 3. Lancer l'application

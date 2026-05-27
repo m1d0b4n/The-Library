@@ -93,3 +93,34 @@ Avec le rapport de couverture :
 ```bash
 pytest tests/ --cov=. --cov-report=term-missing
 ```
+
+## Déploiement
+
+<details>
+<summary>Déployer sur Render.com</summary>
+
+### Prérequis
+- Compte sur [render.com](https://render.com)
+- Repo GitHub connecté à Render
+
+### Étapes
+
+1. Sur Render → **New Web Service**
+2. Connecter le repo  
+3. Remplir les champs :
+   - **Language** : Python 3
+   - **Branch** : main
+   - **Build Command** : `pip install -r requirements.txt`
+   - **Start Command** : `gunicorn "app:create_app()"`
+4. Dans **Environment Variables**, ajouter :
+   - `SECRET_KEY` → générer une longue valeur aléatoire :  
+     ```bash
+     python -c "import secrets; print(secrets.token_hex(32))"
+     ```
+5. Cliquer sur **Deploy Web Service**
+
+> ⚠️ La base de données SQLite est réinitialisée à chaque déploiement.
+> Les données ne persistent pas entre les deploys. C'est un deploiement à unique but démonstratif.
+
+</details>
+

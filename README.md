@@ -1,5 +1,11 @@
 # The Library
 
+![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=flat&logo=python&logoColor=F5CC27)
+![Flask](https://img.shields.io/badge/Flask-3.0-F4320B?style=flat&logo=flask&logoColor=red)
+![SQLite](https://img.shields.io/badge/SQLite-2780F5?style=flat&logo=sqlite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-C809B1?style=flat&logo=tailwindcss&logoColor=purple)
+![Tests](https://img.shields.io/badge/Tests-84%20passed-22C55E?style=flat&logo=pytest&logoColor=white)
+
 ```txt
          ______ ______              
        _/      Y      \_            

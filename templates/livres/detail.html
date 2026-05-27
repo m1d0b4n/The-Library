@@ -13,9 +13,23 @@
 
   <div class="flex gap-6 mb-6">
     {% if livre.image_filename %}
-    <img src="{{ url_for('static', filename='uploads/livres/' + livre.image_filename) }}"
-         alt="Couverture de {{ livre.titre }}"
-         class="w-28 h-40 object-cover rounded-xl border border-gray-200 shadow-sm shrink-0" />
+    {% set img_url = url_for('static', filename='uploads/livres/' + livre.image_filename) %}
+    <div class="w-28 h-40 shrink-0" style="position:relative; cursor:pointer;"
+         onclick="ouvrirZoom(this)" data-src="{{ img_url }}" data-alt="Couverture de {{ livre.titre }}"
+         onmouseenter="this.querySelector('.zoom-overlay').style.opacity='1'"
+         onmouseleave="this.querySelector('.zoom-overlay').style.opacity='0'"
+         title="Cliquer pour agrandir">
+      <img src="{{ img_url }}"
+           alt="Couverture de {{ livre.titre }}"
+           class="w-full h-full object-cover rounded-xl border border-gray-200 shadow-sm" />
+      <div class="zoom-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.3); border-radius:12px; opacity:0; transition:opacity 0.2s; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+        <span style="background:rgba(255,255,255,0.92); border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+          <svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke="#374151" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm-6-3v6m-3-3h6" />
+          </svg>
+        </span>
+      </div>
+    </div>
     {% else %}
     <div class="w-28 h-40 bg-indigo-50 rounded-xl border border-indigo-100 flex items-center justify-center shrink-0">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

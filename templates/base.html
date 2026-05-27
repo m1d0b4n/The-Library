@@ -148,5 +148,36 @@
     }, 5000);
   </script>
 
+  <!-- Modale zoom couverture -->
+  <!-- Lightbox zoom couverture -->
+  <div id="zoom-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:1rem;" onclick="fermerZoom()">
+    <div style="position:relative; max-width:600px; width:100%;" onclick="event.stopPropagation()">
+      <button type="button" onclick="fermerZoom()" style="position:absolute; top:-14px; right:-14px; background:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; z-index:1;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="#374151" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <img id="zoom-img" src="" alt="" style="width:100%; max-height:80vh; object-fit:contain; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.5);" />
+      <p id="zoom-caption" style="color:rgba(255,255,255,0.8); text-align:center; margin-top:10px; font-size:14px;"></p>
+    </div>
+  </div>
+  <script>
+    function ouvrirZoom(el) {
+      var src = el.getAttribute('data-src');
+      var alt = el.getAttribute('data-alt');
+      document.getElementById('zoom-img').src = src;
+      document.getElementById('zoom-img').alt = alt;
+      document.getElementById('zoom-caption').textContent = alt;
+      var m = document.getElementById('zoom-modal');
+      m.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function fermerZoom() {
+      document.getElementById('zoom-modal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fermerZoom(); });
+  </script>
+
 </body>
 </html>

@@ -1,0 +1,488 @@
+════════════════════════════════════════════════════════════════
+  THE LIBRARY — SCRIPT DE PRÉSENTATION ORALE
+  Durée : 20 min présentation + 10 min démo live
+  Date  : 27 mai 2026
+════════════════════════════════════════════════════════════════
+
+INTERVENANTS
+  RUDY    → ~7 min   (Scrum Master + Lead dev)
+  DIEGO   → ~6 min   (Revue de code + Architecture)
+  ARES    → ~7 min   (Tests + Sécurité)
+  MOHAMED → ~3 min   (Documentation & Conclusion)
+
+════════════════════════════════════════════════════════════════
+  PRÉSENTATION — 20 MIN
+════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────
+  SLIDE 1 — PAGE DE TITRE                           [RUDY ~30 s]
+─────────────────────────────────────────────────────────────
+
+Bonjour. Nous sommes l'équipe The Library et nous allons vous
+présenter notre projet : une application web de gestion
+de bibliothèque développée en Python/Flask, sur 5 sprints,
+avec 92 tests automatisés et plus de 10 Pull Requests.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 2 — SOMMAIRE                                [RUDY ~30 s]
+─────────────────────────────────────────────────────────────
+
+Voici le plan. Nous allons couvrir :
+le contexte et les objectifs du projet,
+notre organisation Agile et notre workflow GitHub,
+l'architecture technique de l'application,
+la sécurité et les tests,
+puis une démonstration live.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 3 — LE CONTEXTE                             [RUDY ~1.5 min]
+─────────────────────────────────────────────────────────────
+
+Le projet nous demandait de développer une application web
+complète de A à Z, avec des pratiques professionnelles :
+Python/Flask, Git/GitHub, application fonctionnelle,
+sécurisée et testée.
+
+L'objectif que nous nous sommes fixé était d'aller au-delà
+du minimum requis — appliquer un workflow Git structuré,
+une méthode Agile réelle, des tests automatisés
+et une sécurité intégrée dès la conception.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 4 — L'APPLICATION EN UN COUP D'ŒIL         [RUDY ~1 min]
+─────────────────────────────────────────────────────────────
+
+The Library est une bibliothèque numérique.
+Les utilisateurs peuvent consulter un catalogue de livres
+avec images de couverture, emprunter et réserver des ouvrages,
+et gérer leur compte.
+
+L'application distingue deux rôles : utilisateur standard
+et administrateur, avec des permissions différentes
+à chaque niveau.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 5 — ORGANISATION AGILE / SPRINTS            [RUDY ~2 min]
+─────────────────────────────────────────────────────────────
+
+Nous avons travaillé en 5 sprints avec des livraisons
+partielles fonctionnelles à chaque itération.
+Chaque sprint suivait le même cycle :
+développement → tests → merge sur main.
+
+  Sprint 1 — Infrastructure :
+    mise en place des modèles de données, configuration
+    SQLite, structure de routing Flask.
+
+  Sprint 2 — Authentification :
+    inscription, connexion sécurisée avec Flask-Login,
+    mots de passe hachés avec bcrypt.
+
+  Sprint 3 — CRUD livres :
+    création, modification, suppression.
+    Protection CSRF activée sur tous les formulaires.
+
+  Sprints 4 & 5 — Interface & Administration :
+    interface responsive Tailwind CSS,
+    panel d'administration avec gestion des utilisateurs
+    et upload d'images de couverture.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 6 — ISSUES & TRAÇABILITÉ                   [DIEGO ~1 min]
+─────────────────────────────────────────────────────────────
+
+Chaque fonctionnalité ou correction a démarré par une issue
+GitHub, documentée avec un titre, une description
+et des critères d'acceptation.
+
+Cela nous a donné une traçabilité complète :
+on sait exactement qui a travaillé sur quoi, quand
+et pour quelle raison. Le retour arrière est possible
+à tout moment via l'historique Git.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 7 — WORKFLOW GIT                           [DIEGO ~2 min]
+─────────────────────────────────────────────────────────────
+
+Le workflow appliqué : Issue → Branche → Développement
+→ Tests → Pull Request → Review → Merge → Main.
+
+Personne ne commit directement sur main.
+Chaque tâche correspond à une branche dédiée
+avec une convention de nommage stricte :
+feature/, fix/, docs/, test/.
+
+Les commits suivent le format conventionnel —
+feat, fix, docs — avec le numéro d'issue en référence.
+Cela donne un historique propre et lisible.
+
+Avant toute Pull Request, les tests doivent passer.
+La PR est relue par au moins un autre membre avant le merge.
+Une PR fermée = une issue fermée automatiquement.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 8 — SÉCURITÉ : VUE D'ENSEMBLE              [ARES ~30 s]
+─────────────────────────────────────────────────────────────
+
+Sur la partie sécurité, nous avons couvert
+cinq axes principaux : hachage bcrypt,
+protection CSRF globale, validation des fichiers uploadés,
+contrôle de rôle par décorateur, et whitelist d'extensions.
+
+Les diapositives suivantes détaillent chaque point.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 9 — ARCHITECTURE : BLUEPRINTS              [DIEGO ~1.5 min]
+─────────────────────────────────────────────────────────────
+
+L'application est structurée avec des blueprints Flask.
+Chaque domaine fonctionnel est isolé dans son propre module.
+
+  auth_bp : inscription, connexion, déconnexion.
+  pages_bp : catalogue, détail livre, formulaires HTML.
+  admin_bp : gestion des utilisateurs et du catalogue côté admin.
+  livres_bp, reservations_bp : endpoints JSON utilisés
+    par la suite de tests.
+
+Cette séparation facilite la maintenance et les tests —
+on peut mocker ou tester chaque blueprint indépendamment.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 10 — CATALOGUE & INTERFACE                 [DIEGO ~1.5 min]
+─────────────────────────────────────────────────────────────
+
+L'interface est construite avec Tailwind CSS v3 via CDN,
+sans framework JavaScript lourd.
+
+La page catalogue affiche les couvertures en miniature
+avec un placeholder SVG généré automatiquement
+si aucune image n'est disponible.
+La recherche et le filtre par disponibilité sont intégrés.
+
+La page de détail affiche l'image en pleine taille,
+les métadonnées du livre et des boutons d'action
+contextuels selon le rôle de l'utilisateur.
+
+Des composants JavaScript vanilla gèrent la lightbox,
+les modales de confirmation pour les suppressions
+et les spinners sur tous les boutons de soumission —
+le tout dans un seul template de base.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 11 — AUTHENTIFICATION                      [ARES ~1.5 min]
+─────────────────────────────────────────────────────────────
+
+Le système d'authentification repose sur Flask-Login
+pour la gestion des sessions et bcrypt pour les mots de passe.
+
+Les mots de passe ne sont jamais stockés en clair.
+bcrypt génère un sel automatique par hash,
+et la comparaison est résistante aux attaques par timing.
+
+Les routes sensibles sont protégées par le décorateur
+login_required. Les routes d'administration utilisent
+un décorateur admin_required personnalisé qui retourne
+un 403 propre si l'utilisateur n'a pas le rôle requis.
+
+La propriété is_admin est calculée dynamiquement
+depuis le champ rôle en base — pas de flag booléen séparé.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 12 — PANEL ADMINISTRATEUR                  [DIEGO ~1 min]
+─────────────────────────────────────────────────────────────
+
+Le panel admin est accessible uniquement aux comptes
+dont le rôle est "admin" en base de données.
+La vérification est faite côté serveur à chaque requête.
+
+L'administrateur peut lister tous les utilisateurs,
+les promouvoir ou rétrograder en un clic,
+et les supprimer. Il peut également gérer l'intégralité
+du catalogue — modifier ou supprimer n'importe quel livre,
+y compris ceux créés par d'autres utilisateurs.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 13 — PHILOSOPHIE SÉCURITÉ                  [ARES ~30 s]
+─────────────────────────────────────────────────────────────
+
+Notre approche : "Security by design, not by afterthought."
+
+La sécurité a été intégrée dès Sprint 2,
+pas ajoutée en fin de projet.
+Les axes couverts : authentification, autorisation,
+intégrité des données et journalisation.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 14 — PROTECTION CSRF                       [ARES ~1 min]
+─────────────────────────────────────────────────────────────
+
+Flask-WTF avec CSRFProtect est activé globalement
+sur l'application. Un token CSRF est automatiquement
+injecté dans chaque formulaire HTML.
+
+Les blueprints API JSON sont exemptés explicitement —
+en passant l'objet blueprint directement à csrf.exempt,
+pas une chaîne de caractères.
+
+Toute requête POST sans token valide est rejetée avec un 400.
+Cela protège contre les attaques CSRF où un site tiers
+tenterait de déclencher des actions au nom d'un utilisateur
+connecté à son insu.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 15 — VALIDATION DES IMAGES UPLOADÉES       [ARES ~1 min]
+─────────────────────────────────────────────────────────────
+
+Pour l'upload des couvertures, deux niveaux de validation.
+
+Premier niveau : whitelist d'extensions.
+Seules jpg, jpeg, png, webp et gif sont acceptées.
+Toute autre extension est rejetée immédiatement.
+
+Deuxième niveau : vérification des magic bytes.
+Le serveur lit les premiers octets du fichier
+pour confirmer que le contenu correspond au type déclaré.
+PNG = \x89PNG, JPEG = \xFF\xD8\xFF, GIF = GIF89a.
+Un fichier renommé avec la mauvaise extension est détecté
+et rejeté, indépendamment de ce qu'indique l'extension.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 16 — ANALYSE STATIQUE BANDIT               [ARES ~1 min]
+─────────────────────────────────────────────────────────────
+
+Bandit est l'outil OWASP d'analyse statique pour Python.
+Il détecte les injections, les mauvaises pratiques,
+les exécutions dangereuses et les expositions de secrets.
+
+Résultat sur notre code : zéro issue détectée —
+ni Low, ni Medium, ni High.
+
+588 lignes analysées, zéro ligne ignorée avec #nosec.
+Commande : bandit -r routes models app.py.
+L'analyse est complète et transparente.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 17 — TESTS : STRATÉGIE                     [ARES ~1 min]
+─────────────────────────────────────────────────────────────
+
+Les tests couvrent quatre domaines :
+  - Authentification : inscription, connexion, accès non autorisé.
+  - CRUD livres : création, modification, suppression.
+  - Administration : vérification que les non-admins
+    sont bien bloqués sur les routes sensibles.
+  - Images : upload valide, extensions refusées, magic bytes.
+
+Framework : pytest avec des fixtures réutilisables —
+une fixture pour l'application de test,
+une autre pour simuler un utilisateur connecté ou non.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 18 — TESTS : RÉSULTATS                     [ARES ~1 min]
+─────────────────────────────────────────────────────────────
+
+92 tests, zéro échec, zéro régression.
+
+Les tests sont relancés à chaque Pull Request.
+En cas d'échec, le merge est bloqué — la branche main
+est garantie stable à tout moment.
+
+Résultat : une base de code fiable et maintenable.
+Chaque fonctionnalité est validée avant intégration.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 19 — ANNONCE DE LA DÉMO                    [RUDY ~30 s]
+─────────────────────────────────────────────────────────────
+
+Avant de passer à la conclusion, nous allons vous montrer
+l'application en fonctionnement.
+Je prends le navigateur, Ares et Diego commentent
+les aspects sécurité et architecture.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 20 — CE QU'ON RETIENT                    [MOHAMED ~1.5 min]
+─────────────────────────────────────────────────────────────
+
+Ce projet nous a appris à travailler comme une vraie équipe
+de développement professionnelle.
+
+Git et GitHub ne servent pas uniquement à sauvegarder du code —
+ils structurent la collaboration, la revue et la traçabilité.
+La méthode Agile nous a permis de livrer régulièrement
+sans perdre le fil dans la complexité du projet.
+
+La sécurité doit être pensée dès le début, pas en fin de projet.
+Les tests ne sont pas une formalité —
+c'est ce qui nous a permis de refactoriser sans tout casser.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 21 — BILAN                               [MOHAMED ~1 min]
+─────────────────────────────────────────────────────────────
+
+En résumé, nous livrons :
+
+  ✓ Application complète, fonctionnelle, sécurisée et testée
+  ✓ Workflow GitHub professionnel appliqué du début à la fin
+  ✓ Zéro vulnérabilité détectée par Bandit
+  ✓ 92 tests passants, couverture complète
+  ✓ Architecture modulaire avec Blueprints Flask
+
+─────────────────────────────────────────────────────────────
+  SLIDE 22 — MERCI / QUESTIONS                   [TOUS ~30 s]
+─────────────────────────────────────────────────────────────
+
+MOHAMED : Merci pour votre attention.
+  Nous sommes disponibles pour vos questions.
+
+RUDY    : Pour tout ce qui concerne le code et le déploiement.
+ARES    : Pour les tests et la sécurité.
+DIEGO   : Pour l'architecture et les choix techniques.
+
+
+════════════════════════════════════════════════════════════════
+  DÉMO LIVE — 10 MIN
+════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 1 — PAGE D'ACCUEIL                          [RUDY ~1 min]
+─────────────────────────────────────────────────────────────
+
+[Ouvrir le navigateur sur l'app]
+
+Voici la page d'accueil de The Library.
+La navbar affiche "Connexion" et "S'inscrire"
+puisqu'on n'est pas encore authentifiés.
+On peut parcourir le catalogue mais pas réserver.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 2 — INSCRIPTION & CONNEXION    [RUDY drive / ARES commente]
+  ~2.5 min
+─────────────────────────────────────────────────────────────
+
+[Cliquer sur "S'inscrire"]
+
+RUDY : Je crée un compte démo —
+  email : demo@thelib.com
+  mot de passe : quelque chose de solide
+
+[Remplir le formulaire, cliquer sur "S'inscrire"]
+
+ARES : Regardez dans le terminal —
+  vous voyez le log en temps réel :
+  "[INFO] Inscription : demo@thelib.com"
+  Chaque action sensible est tracée avec l'heure et l'IP.
+  C'est ça qu'on entend par logging des actions critiques.
+
+[Connecter le compte]
+
+ARES : Et là "[INFO] Connexion reussie : demo@thelib.com (IP: 127.0.0.1)"
+  Le mot de passe n'apparaît jamais dans les logs ni en base —
+  il est hashé avec bcrypt dès la saisie.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 3 — CATALOGUE & RÉSERVATION  [RUDY drive / DIEGO commente]
+  ~2 min
+─────────────────────────────────────────────────────────────
+
+[Naviguer vers le catalogue]
+
+DIEGO : Le catalogue charge tous les livres depuis SQLite
+  via SQLAlchemy. Chaque livre peut avoir une image de couverture —
+  si on en uploade une, Pillow la compresse automatiquement
+  pour pas exploser le stockage serveur.
+
+[Cliquer sur un livre]
+
+RUDY : Page de détail. On voit le bouton "Réserver ce livre".
+  Si je fais F12 et que j'inspecte le formulaire,
+  un champ caché "csrf_token" est présent — c'est la protection CSRF
+  mise en place avec Flask-WTF.
+
+[Réserver le livre]
+
+ARES : Et le log : "[INFO] Reservation : 'Titre' par demo@thelib.com"
+  Le livre passe en "Réservé par vous"
+  et le bouton devient "Annuler ma réservation".
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 4 — TEST CSRF EN LIVE                      [ARES ~2 min]
+─────────────────────────────────────────────────────────────
+
+Démonstration de la protection CSRF.
+Voici ce qui se passe si un POST est soumis sans token valide.
+
+[Ouvrir la console DevTools, faire un fetch POST sans token]
+
+  fetch('/catalogue/MonLivre/reserver', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  }).then(r => console.log(r.status))
+
+Résultat : 400 Bad Request.
+Flask-WTF rejette la requête immédiatement.
+Un site malveillant qui essaierait de faire des actions
+au nom d'un utilisateur connecté récupère juste un 400.
+C'est exactement le rôle de la protection CSRF.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 5 — PANEL ADMIN               [RUDY drive / DIEGO commente]
+  ~2 min
+─────────────────────────────────────────────────────────────
+
+[Se connecter en compte admin]
+
+DIEGO : L'admin a accès à un panel complet.
+  Il peut voir tous les utilisateurs inscrits —
+  les promouvoir admin, les supprimer.
+  Il peut aussi gérer l'ensemble du catalogue —
+  modifier ou supprimer n'importe quel livre,
+  même ceux qu'il n'a pas créés lui-même.
+
+[Cliquer "Supprimer" sur un livre]
+
+RUDY : Pas de popup navigateur natif.
+  Une modale Tailwind s'ouvre
+  et qui demande confirmation avec le titre du livre.
+  Si on annule, rien ne se passe.
+  Si on confirme, le livre est supprimé
+  et un log WARNING est écrit dans le terminal.
+
+  Le bouton affiche un spinner pendant le traitement —
+  un retour visuel immédiat pour l'utilisateur.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 6 — CLÔTURE DE LA DÉMO                      [TOUS ~1 min]
+─────────────────────────────────────────────────────────────
+
+RUDY : Voilà pour la démo. L'app tourne,
+  les tests passent, la sécurité est en place.
+  Des questions ?
+
+ARES : Si c'est sur les tests ou la sécurité, je suis là.
+
+DIEGO : Pareil pour les choix d'architecture ou de refactoring.
+
+MOHAMED : Et pour tout ce qui concerne les specs ou la méthodo Agile.
+
+
+════════════════════════════════════════════════════════════════
+  TEMPS DE PAROLE FINAL
+════════════════════════════════════════════════════════════════
+
+  RUDY    : Slides 1-5, 19 (~7 min) + démo narration (~4 min) = ~11 min
+  DIEGO   : Slides 6-7, 9-10, 12 (~6 min) + démo archi (~2 min) = ~8 min
+  ARES    : Slides 8, 11, 13-18 (~7 min) + démo sécurité (~2 min) = ~9 min
+  MOHAMED : Slides 20, 21, 22 (~3 min) = ~3 min
+
+════════════════════════════════════════════════════════════════
+  CHECKLIST AVANT LA PRÉSENTATION
+════════════════════════════════════════════════════════════════
+
+  □ App lancée localement (py app.py)
+  □ Quelques livres en base (avec images si possible)
+  □ Compte admin créé via /admin/setup
+  □ Terminal visible à côté du navigateur (voir les logs)
+  □ DevTools ouverts sur l'onglet Console
+  □ Connexion internet stable (Tailwind charge depuis CDN)
+  □ Backup plan : screenshots / vidéo enregistrée si bug
+
+════════════════════════════════════════════════════════════════

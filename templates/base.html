@@ -148,5 +148,40 @@
     }, 5000);
   </script>
 
+  <!-- Modale zoom couverture -->
+  <div id="zoom-modal"
+       class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+       onclick="closeZoom()">
+    <div class="relative max-w-2xl w-full" onclick="event.stopPropagation()">
+      <button onclick="closeZoom()"
+              class="absolute -top-3 -right-3 z-10 bg-white text-gray-600 hover:text-gray-900 rounded-full w-9 h-9 flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-150">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <img id="zoom-img" src="" alt=""
+           class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl" />
+      <p id="zoom-caption" class="text-center text-white/80 text-sm mt-3 font-medium"></p>
+    </div>
+  </div>
+  <script>
+    function openZoom(src, alt) {
+      const modal = document.getElementById('zoom-modal');
+      document.getElementById('zoom-img').src = src;
+      document.getElementById('zoom-img').alt = alt;
+      document.getElementById('zoom-caption').textContent = alt;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeZoom() {
+      const modal = document.getElementById('zoom-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+  </script>
+
 </body>
 </html>

@@ -149,38 +149,34 @@
   </script>
 
   <!-- Modale zoom couverture -->
-  <div id="zoom-modal"
-       class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4"
-       onclick="closeZoom()">
-    <div class="relative max-w-2xl w-full" onclick="event.stopPropagation()">
-      <button onclick="closeZoom()"
-              class="absolute -top-3 -right-3 z-10 bg-white text-gray-600 hover:text-gray-900 rounded-full w-9 h-9 flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-150">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+  <!-- Lightbox zoom couverture -->
+  <div id="zoom-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; padding:1rem;" onclick="fermerZoom()">
+    <div style="position:relative; max-width:600px; width:100%;" onclick="event.stopPropagation()">
+      <button type="button" onclick="fermerZoom()" style="position:absolute; top:-14px; right:-14px; background:#fff; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; z-index:1;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke="#374151" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
-      <img id="zoom-img" src="" alt=""
-           class="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl" />
-      <p id="zoom-caption" class="text-center text-white/80 text-sm mt-3 font-medium"></p>
+      <img id="zoom-img" src="" alt="" style="width:100%; max-height:80vh; object-fit:contain; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.5);" />
+      <p id="zoom-caption" style="color:rgba(255,255,255,0.8); text-align:center; margin-top:10px; font-size:14px;"></p>
     </div>
   </div>
   <script>
-    function openZoom(src, alt) {
-      const modal = document.getElementById('zoom-modal');
+    function ouvrirZoom(el) {
+      var src = el.getAttribute('data-src');
+      var alt = el.getAttribute('data-alt');
       document.getElementById('zoom-img').src = src;
       document.getElementById('zoom-img').alt = alt;
       document.getElementById('zoom-caption').textContent = alt;
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      var m = document.getElementById('zoom-modal');
+      m.style.display = 'flex';
       document.body.style.overflow = 'hidden';
     }
-    function closeZoom() {
-      const modal = document.getElementById('zoom-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    function fermerZoom() {
+      document.getElementById('zoom-modal').style.display = 'none';
       document.body.style.overflow = '';
     }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fermerZoom(); });
   </script>
 
 </body>

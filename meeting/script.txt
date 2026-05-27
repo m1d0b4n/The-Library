@@ -1,0 +1,464 @@
+════════════════════════════════════════════════════════════════
+  THE LIBRARY — SCRIPT DE PRÉSENTATION ORALE
+  Durée : 20 min présentation + 10 min démo live
+  Date  : 27 mai 2026
+════════════════════════════════════════════════════════════════
+
+INTERVENANTS
+  RUDY    → ~10 min  (Scrum Master + Lead dev)
+  DIEGO   → ~8 min   (Revue de code + Refactoring)
+  ARES    → ~7.5 min (Tests + Sécurité)
+  MOHAMED → ~3 min   (Documentation — conclusion uniquement)
+
+  NOTE : Mohamed parle uniquement en slide 8 (conclusion).
+         Rudy, Diego et Ares se partagent le reste équitablement.
+
+════════════════════════════════════════════════════════════════
+  PRÉSENTATION — 20 MIN
+════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────
+  SLIDE 1 — INTRODUCTION & CONTEXTE                 [RUDY ~2 min]
+─────────────────────────────────────────────────────────────
+
+Bonjour à tout le monde. On est The Library,
+une équipe de 4 devs, et on est là pour vous présenter
+notre projet de fin de sprint.
+
+Le contexte : on nous a donné une application Flask existante,
+la "Librairie ABC". Une app de gestion de bibliothèque —
+des livres, des réservations, des utilisateurs.
+Sauf que cette app de départ elle était... disons,
+fragile. Pas de sécurité, pas de tests, pas d'interface HTML.
+Essentiellement un script Python avec quelques classes.
+
+Notre mission : la transformer en une vraie application web,
+sécurisée, testée, et déployable en production.
+On va vous montrer exactement comment on a fait ça sur 3 sprints.
+
+Rapidement l'équipe :
+  - Diego, revue de code et refactoring
+  - Ares, tests et sécurité
+  - Mohamed, spécifications et documentation
+  - Et moi Rudy, Scrum Master et lead dev
+
+→ Je continue sur comment on s'est organisés.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 2 — ORGANISATION AGILE & GIT WORKFLOW       [RUDY ~2.5 min]
+─────────────────────────────────────────────────────────────
+
+Pour s'organiser, on a travaillé en Agile avec des sprints
+d'une semaine. Trois sprints, trois objectifs clairs.
+
+Sprint 1, semaine du 12 mai :
+  analyse du code, identification des vulnérabilités,
+  mise en place des premières fondations de tests.
+
+Sprint 2, semaine du 19 mai :
+  sécurisation concrète de l'app — headers HTTP, debug mode,
+  authentification, hash des mots de passe.
+
+Sprint 3, cette semaine :
+  interface HTML complète avec Tailwind CSS,
+  protection CSRF sur tous les formulaires,
+  logging des actions sensibles.
+  Et on est là pour vous présenter le résultat.
+
+Côté Git, on a appliqué un workflow strict :
+on ne touche jamais directement à main.
+Chaque tâche = une issue GitHub, une branche dédiée,
+une Pull Request relue par au moins un autre membre
+avant de merger.
+
+Tous les commits suivent le format conventionnel —
+feat, fix, docs — avec le numéro d'issue en référence.
+Ça donne un historique propre où on sait exactement
+qui a fait quoi, quand et pourquoi.
+
+→ Diego, tu prends sur l'analyse initiale du code ?
+
+─────────────────────────────────────────────────────────────
+  SLIDE 3 — ANALYSE INITIALE & VULNÉRABILITÉS      [DIEGO ~3 min]
+─────────────────────────────────────────────────────────────
+
+Merci Rudy. Donc le code de départ,
+avec Rudy on l'a passé en revue dès Sprint 1,
+et on a dressé une liste de tout ce qui n'allait pas.
+
+Côté architecture d'abord :
+  - Zéro persistance des données. Tout était en mémoire.
+    Au redémarrage de l'app, tout disparaissait.
+  - Pas d'application Flask réelle, juste des classes Python brutes.
+  - Pas d'authentification. N'importe qui pouvait réserver
+    ou annuler n'importe quel livre sans s'identifier.
+  - Pas de validation des entrées — un titre vide,
+    une année négative, ça passait sans problème.
+
+Côté sécurité, on a lancé Bandit —
+l'outil d'analyse statique de sécurité Python.
+Résultat : 13 vulnérabilités détectées. Les plus critiques :
+
+  → Debug mode activé en production.
+    Ça expose une console Python interactive dans le navigateur.
+    Autant donner les clés du serveur à n'importe qui.
+
+  → SECRET_KEY écrite en dur dans le code source.
+    Si quelqu'un voit le code, il peut forger
+    les cookies de session de tous les utilisateurs.
+
+  → Zéro protection CSRF.
+    N'importe quel site malveillant pouvait déclencher
+    des actions au nom d'un utilisateur connecté
+    sans qu'il s'en rende compte.
+
+  → Pas de headers de sécurité HTTP.
+    Clickjacking, XSS, content sniffing — rien n'était bloqué.
+
+  → Zéro logging.
+    Impossible de savoir qui avait fait quoi sur l'app.
+
+On a tout documenté dans notre analyse de code,
+et ça nous a servi de roadmap directe pour Sprint 2 et 3.
+
+→ Ares, tu prends sur ce qu'on a mis en place côté tests ?
+
+─────────────────────────────────────────────────────────────
+  SLIDE 4 — TESTS AUTOMATIQUES & COUVERTURE         [ARES ~2.5 min]
+─────────────────────────────────────────────────────────────
+
+Ouais, merci Diego. Les tests, c'est mon domaine.
+
+Quand on a récupéré le projet : zéro test. Pas un seul. Rien.
+On partait vraiment de zéro.
+
+Sprint 1 : on arrive à 18 tests.
+  Le CRUD de base — ajouter un livre, le modifier, le supprimer —
+  et les premières routes d'authentification.
+
+Sprint 2 : on monte à 51 tests, couverture à 82%.
+  On ajoute les tests de sécurité — vérification des headers HTTP,
+  rejet des inputs malveillants, test des limites.
+
+Sprint 3, état actuel : 84 tests qui passent.
+  Je dis bien 84 — le projet a continué d'évoluer
+  au-delà de ce qu'on a documenté dans les anciens fichiers.
+  Couverture à 85%.
+
+On a notamment des tests pour le CSRF —
+on vérifie que tout POST sans token valide reçoit un 400.
+Des tests avec caplog qui vérifient que les logs sont
+bien écrits lors des actions sensibles.
+Et une suite complète de logique d'accès —
+qui peut modifier quoi, qui peut supprimer quoi,
+admin vs utilisateur standard.
+
+Framework : pytest, avec des fixtures réutilisables
+pour l'app de test et pour simuler des utilisateurs
+connectés ou non.
+
+→ Je continue sur les corrections concrètes qu'on a apportées.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 5 — CORRECTIONS & SÉCURITÉ                  [ARES ~3 min]
+─────────────────────────────────────────────────────────────
+
+Concrètement, voilà ce qu'on a implémenté.
+
+Sprint 2 — sécurité de base :
+
+  Debug mode : désactivé, contrôlé par variable d'environnement
+  FLASK_DEBUG. En production il est à 0, point.
+
+  Secret Key : générée avec os.urandom si pas définie.
+  Cryptographiquement aléatoire. Elle ne touche jamais le code source.
+
+  Headers de sécurité : X-Content-Type-Options, X-Frame-Options DENY,
+  Content-Security-Policy — ajoutés sur toutes les réponses HTTP
+  via un hook after_request. C'est une ligne de config,
+  mais c'est ce qui empêche le clickjacking et le sniffing.
+
+Sprint 3 — couche applicative :
+
+  Authentification : Flask-Login pour les sessions,
+  bcrypt pour les mots de passe.
+  Même en cas de fuite de base de données,
+  les hashs bcrypt sont pratiquement impossibles à inverser.
+  Les routes sensibles ont un décorateur login_required.
+  Les routes admin ont un décorateur admin_required custom
+  qui retourne un 403 propre.
+
+  CSRF : Flask-WTF avec un token caché dans chaque formulaire HTML.
+  Les endpoints API JSON sont exemptés proprement —
+  on passe les objets blueprint directement à csrf.exempt,
+  pas des strings. Petite chose, mais ça marche pas autrement —
+  leçon apprise en Sprint 3.
+
+  Logging : chaque action critique est tracée —
+  connexion réussie, échec de connexion, inscription,
+  réservation, annulation, suppression. Avec l'adresse IP.
+  Niveau INFO pour les actions normales,
+  WARNING pour les suppressions et déconnexions.
+
+Résultat Bandit final : zéro issue HIGH, zéro MEDIUM.
+
+→ Diego, tu prends sur l'architecture finale ?
+
+─────────────────────────────────────────────────────────────
+  SLIDE 6 — ARCHITECTURE FINALE                    [DIEGO ~3 min]
+─────────────────────────────────────────────────────────────
+
+Merci. Là je vais vous montrer où on est arrivés
+en termes d'architecture.
+
+On a structuré l'app avec des blueprints Flask.
+C'est le pattern de modularisation de Flask —
+chaque domaine fonctionnel a son propre module isolé.
+
+  pages_bp : toutes les routes HTML.
+    Catalogue, détail livre, formulaire ajout/modification,
+    connexion, inscription, déconnexion.
+    C'est ce que voit l'utilisateur final.
+
+  admin_bp : le panel d'administration.
+    Gestion des utilisateurs, promotion admin,
+    suppression de comptes, liste des livres côté admin.
+
+  livres_bp, auth_bp, reservations_bp : routes API JSON.
+    Utilisées par la suite de tests,
+    et potentiellement par une future app mobile.
+
+Côté base de données : SQLite via SQLAlchemy.
+Deux modèles :
+
+  Livre : titre unique, auteur, année de publication,
+    disponibilité, champ created_by pour savoir
+    qui a ajouté le livre — ça permet à chaque user
+    de modifier uniquement ses propres livres,
+    sauf les admins qui peuvent tout.
+
+  User : email unique, hash du mot de passe, rôle.
+    La propriété is_admin est calculée dynamiquement
+    depuis le champ rôle — pas de flag booléen séparé.
+
+Pour le frontend : Tailwind CSS v3 via CDN, sans framework JS lourd.
+Composants custom : lightbox pour zoomer les couvertures de livres,
+modales de confirmation pour les suppressions,
+spinners animés sur tous les boutons de soumission.
+Tout ça géré en JS vanilla dans le template de base —
+un seul endroit, ça s'applique partout automatiquement.
+
+Upload d'images : Pillow compresse automatiquement
+les couvertures uploadées. Y'a une validation du type MIME
+côté serveur pour éviter les uploads malveillants.
+
+→ Rudy, tu fais la transition vers la démo ?
+
+─────────────────────────────────────────────────────────────
+  SLIDE 7 — DÉPLOIEMENT & TRANSITION DÉMO          [RUDY ~1.5 min]
+─────────────────────────────────────────────────────────────
+
+Ouais. Deux mots sur le déploiement avant la démo.
+
+L'app est déployée sur Render.com.
+On a un fichier render.yaml dans le repo,
+gunicorn comme serveur WSGI en production.
+La SECRET_KEY est injectée comme variable d'environnement —
+elle ne touche jamais le code source.
+
+La base de données est SQLite.
+Pour un projet démonstratif c'est suffisant,
+et on est conscients que pour de la vraie prod
+on passerait sur PostgreSQL avec un volume persistant.
+
+Maintenant on va vous montrer tout ça en action.
+Je prends le navigateur, Ares et Diego commentent.
+
+─────────────────────────────────────────────────────────────
+  SLIDE 8 — CONCLUSION & PERSPECTIVES             [MOHAMED ~3 min]
+─────────────────────────────────────────────────────────────
+
+[Mohamed prend la parole après la démo]
+
+Voilà pour la démonstration. En conclusion.
+
+On est partis d'un script Python sans sécurité,
+sans tests, sans interface utilisateur.
+On a livré une application web complète :
+
+  ✓ Authentification sécurisée Flask-Login + bcrypt
+  ✓ Protection CSRF sur tous les formulaires HTML
+  ✓ Logging complet des actions critiques
+  ✓ Panel d'administration
+  ✓ Interface responsive Tailwind CSS
+  ✓ Upload et compression d'images
+  ✓ 84 tests automatiques, 85% de couverture
+  ✓ Zéro vulnérabilité Bandit HIGH ou MEDIUM
+  ✓ Déployé sur Render.com
+
+Les leçons qu'on retient de ce projet :
+  La sécurité, ça se construit par itérations, pas en une fois.
+  Les tests, c'est ce qui nous a permis de refactoriser sans casser.
+  Un workflow Git clair, c'est ce qui nous a permis
+  de travailler à 4 sans se marcher dessus.
+
+Si le projet continuait, on verrait :
+  Une CI/CD GitHub Actions pour lancer les tests
+  automatiquement sur chaque PR.
+  Du Docker pour standardiser le déploiement.
+  Une base de données persistante en production.
+
+Merci pour votre attention. On est dispo pour les questions.
+
+
+════════════════════════════════════════════════════════════════
+  DÉMO LIVE — 10 MIN
+════════════════════════════════════════════════════════════════
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 1 — PAGE D'ACCUEIL                          [RUDY ~1 min]
+─────────────────────────────────────────────────────────────
+
+[Ouvrir le navigateur sur l'app]
+
+Donc là vous voyez la page d'accueil de The Library.
+On a un logo ASCII dans le header — c'est une lib, faut garder l'âme.
+La navbar affiche "Connexion" et "S'inscrire"
+puisqu'on n'est pas encore authentifiés.
+On peut parcourir le catalogue mais pas réserver.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 2 — INSCRIPTION & CONNEXION    [RUDY drive / ARES commente]
+  ~2.5 min
+─────────────────────────────────────────────────────────────
+
+[Cliquer sur "S'inscrire"]
+
+RUDY : Je crée un compte démo —
+  email : demo@thelib.com
+  mot de passe : quelque chose de solide
+
+[Remplir le formulaire, cliquer sur "S'inscrire"]
+
+ARES : Regardez dans le terminal —
+  vous voyez le log en temps réel :
+  "[INFO] Inscription : demo@thelib.com"
+  Chaque action sensible est tracée avec l'heure et l'IP.
+  C'est ça qu'on entend par logging des actions critiques.
+
+[Connecter le compte]
+
+ARES : Et là "[INFO] Connexion reussie : demo@thelib.com (IP: 127.0.0.1)"
+  Le mot de passe n'apparaît jamais dans les logs ni en base —
+  il est hashé avec bcrypt dès la saisie.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 3 — CATALOGUE & RÉSERVATION  [RUDY drive / DIEGO commente]
+  ~2 min
+─────────────────────────────────────────────────────────────
+
+[Naviguer vers le catalogue]
+
+DIEGO : Le catalogue charge tous les livres depuis SQLite
+  via SQLAlchemy. Chaque livre peut avoir une image de couverture —
+  si on en uploade une, Pillow la compresse automatiquement
+  pour pas exploser le stockage serveur.
+
+[Cliquer sur un livre]
+
+RUDY : Page de détail. On voit le bouton "Réserver ce livre".
+  Si je fais F12 et que j'inspecte le formulaire,
+  y'a un champ caché "csrf_token". C'est ce token
+  qu'Ares a mis en place avec Flask-WTF.
+
+[Réserver le livre]
+
+ARES : Et le log : "[INFO] Reservation : 'Titre' par demo@thelib.com"
+  Le livre passe en "Réservé par vous"
+  et le bouton devient "Annuler ma réservation".
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 4 — TEST CSRF EN LIVE                      [ARES ~2 min]
+─────────────────────────────────────────────────────────────
+
+Là je vais vous montrer ce qui se passe si quelqu'un
+essaie de faire un POST sans token CSRF valide.
+
+[Ouvrir la console DevTools, faire un fetch POST sans token]
+
+  fetch('/catalogue/MonLivre/reserver', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  }).then(r => console.log(r.status))
+
+Vous voyez — 400 Bad Request.
+Flask-WTF rejette la requête immédiatement.
+Un site malveillant qui essaierait de faire des actions
+au nom d'un utilisateur connecté récupère juste un 400.
+C'est exactement le rôle de la protection CSRF.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 5 — PANEL ADMIN               [RUDY drive / DIEGO commente]
+  ~2 min
+─────────────────────────────────────────────────────────────
+
+[Se connecter en compte admin]
+
+DIEGO : L'admin a accès à un panel complet.
+  Il peut voir tous les utilisateurs inscrits —
+  les promouvoir admin, les supprimer.
+  Il peut aussi gérer l'ensemble du catalogue —
+  modifier ou supprimer n'importe quel livre,
+  même ceux qu'il n'a pas créés lui-même.
+
+[Cliquer "Supprimer" sur un livre]
+
+RUDY : Vous voyez — pas de popup navigateur moche.
+  On a une modale Tailwind propre qui s'ouvre
+  et qui demande confirmation avec le titre du livre.
+  Si on annule, rien ne se passe.
+  Si on confirme, le livre est supprimé
+  et un log WARNING est écrit dans le terminal.
+
+  Et regardez le bouton quand on clique — y'a un spinner
+  qui s'affiche pendant le traitement.
+  C'est une petite chose mais ça fait une vraie différence
+  pour l'expérience utilisateur.
+
+─────────────────────────────────────────────────────────────
+  ÉTAPE 6 — CLÔTURE DE LA DÉMO                      [TOUS ~1 min]
+─────────────────────────────────────────────────────────────
+
+RUDY : Voilà pour la démo. L'app tourne,
+  les tests passent, la sécurité est en place.
+  Des questions ?
+
+ARES : Si c'est sur les tests ou la sécurité, je suis là.
+
+DIEGO : Pareil pour les choix d'architecture ou de refactoring.
+
+MOHAMED : Et pour tout ce qui concerne les specs ou la méthodo Agile.
+
+
+════════════════════════════════════════════════════════════════
+  TEMPS DE PAROLE FINAL
+════════════════════════════════════════════════════════════════
+
+  RUDY    : Slides 1+2+7 (~6 min) + démo narration (~4 min) = ~10 min
+  DIEGO   : Slides 3+6 (~6 min) + démo commentaires (~2 min) = ~8 min
+  ARES    : Slides 4+5 (~5.5 min) + démo sécurité (~2 min)  = ~7.5 min
+  MOHAMED : Slide 8 (~3 min) = ~3 min
+
+════════════════════════════════════════════════════════════════
+  CHECKLIST AVANT LA PRÉSENTATION
+════════════════════════════════════════════════════════════════
+
+  □ App lancée localement (py app.py)
+  □ Quelques livres en base (avec images si possible)
+  □ Compte admin créé via /admin/setup
+  □ Terminal visible à côté du navigateur (voir les logs)
+  □ DevTools ouverts sur l'onglet Console
+  □ Connexion internet stable (Tailwind charge depuis CDN)
+  □ Backup plan : screenshots / vidéo enregistrée si bug
+
+════════════════════════════════════════════════════════════════

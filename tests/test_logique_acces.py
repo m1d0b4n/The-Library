@@ -91,7 +91,7 @@ def test_modification_livre_libre_ok(client):
     _register_login(client, "alice@x.com")
     _add_livre(client, "Modifiable")
     r = client.post("/catalogue/Modifiable/modifier", data={
-        "auteur": "Nouvel Auteur", "annee_publication": "2010"
+        "titre": "Modifiable", "auteur": "Nouvel Auteur", "annee_publication": "2010"
     }, follow_redirects=True)
     assert "Livre modifié" in r.data.decode()
 
@@ -117,7 +117,7 @@ def test_proprio_peut_modifier(client):
     _register_login(client, "alice@x.com")
     _add_livre(client, "Livre Alice")
     r = client.post("/catalogue/Livre Alice/modifier", data={
-        "auteur": "Nouveau", "annee_publication": "2010"
+        "titre": "Livre Alice", "auteur": "Nouveau", "annee_publication": "2010"
     }, follow_redirects=True)
     assert "Livre modifié" in r.data.decode()
 

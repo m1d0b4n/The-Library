@@ -144,6 +144,7 @@ def test_modifier_livre_remplace_image(app, client):
 
     # Modifier avec une nouvelle image
     resp = client.post("/catalogue/Livre Modif/modifier", data={
+        "titre": "Livre Modif",
         "auteur": "Nouvel Auteur",
         "annee_publication": "2021",
         "image": (io.BytesIO(_png_bytes()), "second.png"),
@@ -173,6 +174,7 @@ def test_modifier_livre_sans_nouvelle_image_conserve_ancienne(app, client):
 
     # Modifier sans fournir de nouvelle image
     client.post("/catalogue/Livre Conserve/modifier", data={
+        "titre": "Livre Conserve",
         "auteur": "Autre Auteur",
         "annee_publication": "2022",
     }, follow_redirects=True)

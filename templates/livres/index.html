@@ -24,20 +24,10 @@
   <a href="{{ url_for('pages.detail_livre', titre=livre.titre) }}"
      class="animate-slide-up group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-1 transition-all duration-300">
     {% if livre.image_filename %}
-    <div class="h-40 bg-gray-100 overflow-hidden relative group/img">
+    <div class="h-40 bg-gray-100 overflow-hidden">
       <img src="{{ url_for('static', filename='uploads/livres/' + livre.image_filename) }}"
            alt="Couverture de {{ livre.titre }}"
            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-      <button
-        onclick="event.preventDefault(); event.stopPropagation(); openZoom('{{ url_for('static', filename='uploads/livres/' + livre.image_filename) }}', 'Couverture de {{ livre.titre }}')"
-        class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover/img:bg-black/25 transition-all duration-200 opacity-0 group-hover/img:opacity-100"
-        title="Agrandir la couverture">
-        <span class="bg-white/90 rounded-full p-2 shadow-md scale-75 group-hover/img:scale-100 transition-transform duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm-6-3v6m-3-3h6" />
-          </svg>
-        </span>
-      </button>
     </div>
     {% else %}
     <div class="h-40 bg-indigo-50 flex items-center justify-center">

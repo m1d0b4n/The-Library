@@ -1,5 +1,20 @@
 # The Library
 
+```
+        .─────────────────────────────────────────────.
+       /                                               \
+      /       T  H  E     L  I  B  R  A  R  Y          \
+     /                                                   \
+     \          Application web Flask · Python 3         /
+      \                                                 /
+       '─────────────────────────────────────────────'
+    ╔══════════════════════════════════════════════════════╗
+    ║ ┃       ┃        ┃         ┃       ┃       ┃        ┃ ║
+    ║ ┃ Flask ┃ SQLite ┃ Tailwind┃  Auth ┃  CSRF ┃  Admin ┃ ║
+    ║ ┃       ┃        ┃         ┃       ┃       ┃        ┃ ║
+    ╚══════════════════════════════════════════════════════╝
+```
+
 Application web de gestion de bibliothèque développée avec Flask.
 
 ## Fonctionnalités

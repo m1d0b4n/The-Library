@@ -2,6 +2,7 @@ import io
 import logging
 import os
 import uuid
+from datetime import date
 
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
@@ -202,19 +203,23 @@ def detail_livre(titre):
 @pages_bp.route("/catalogue/ajouter", methods=["GET", "POST"])
 @login_required
 def ajouter_livre():
+    today = date.today().isoformat()
     if request.method == "POST":
         titre = request.form.get("titre", "").strip()
         auteur = request.form.get("auteur", "").strip()
+        date_pub = request.form.get("annee_publication", "").strip()
         try:
-            annee = int(request.form.get("annee_publication", 0))
-        except ValueError:
-            flash("Année invalide.", "error")
-            return render_template("livres/form.html", livre=None)
+            if not date_pub:
+                raise ValueError
+            annee = int(date_pub.split("-")[0])
+        except (ValueError, IndexError):
+            flash("Date de publication invalide.", "error")
+            return render_template("livres/form.html", livre=None, today=today)
 
         if not titre or len(titre) > 200 or not auteur or len(auteur) > 200:
             flash("Titre et auteur requis (max 200 caractères).", "error")
-        elif annee < 1000 or annee > 2100:
-            flash("Année hors limites (1000-2100).", "error")
+        elif annee < 1000 or annee > date.today().year:
+            flash(f"Année hors limites (1000-{date.today().year}).", "error")
         elif Livre.query.filter_by(titre=titre).first():
             flash("Un livre avec ce titre existe déjà.", "error")
         else:
@@ -222,7 +227,7 @@ def ajouter_livre():
                 image_filename = _sauvegarder_image(request.files.get("image"))
             except ValueError as e:
                 flash(str(e), "error")
-                return render_template("livres/form.html", livre=None)
+                return render_template("livres/form.html", livre=None, today=today)
             db.session.add(Livre(
                 titre=titre, auteur=auteur, annee_publication=annee,
                 created_by=current_user.email, image_filename=image_filename
@@ -230,7 +235,7 @@ def ajouter_livre():
             db.session.commit()
             flash(f"« {titre} » ajouté avec succès.", "success")
             return redirect(url_for("pages.liste_livres"))
-    return render_template("livres/form.html", livre=None)
+    return render_template("livres/form.html", livre=None, today=today)
 
 
 @pages_bp.route("/catalogue/<path:titre>/modifier", methods=["GET", "POST"])
@@ -243,24 +248,28 @@ def modifier_livre(titre):
     if livre.created_by and livre.created_by != current_user.email:
         flash("Vous ne pouvez pas modifier un livre qui ne vous appartient pas.", "error")
         return redirect(url_for("pages.detail_livre", titre=titre))
+    today = date.today().isoformat()
     if request.method == "POST":
         auteur = request.form.get("auteur", "").strip()
+        date_pub = request.form.get("annee_publication", "").strip()
         try:
-            annee = int(request.form.get("annee_publication", 0))
-        except ValueError:
-            flash("Année invalide.", "error")
-            return render_template("livres/form.html", livre=livre)
+            if not date_pub:
+                raise ValueError
+            annee = int(date_pub.split("-")[0])
+        except (ValueError, IndexError):
+            flash("Date de publication invalide.", "error")
+            return render_template("livres/form.html", livre=livre, today=today)
 
         if not auteur or len(auteur) > 200:
             flash("Auteur requis (max 200 caractères).", "error")
-        elif annee < 1000 or annee > 2100:
-            flash("Année hors limites (1000-2100).", "error")
+        elif annee < 1000 or annee > date.today().year:
+            flash(f"Année hors limites (1000-{date.today().year}).", "error")
         else:
             try:
                 nouvelle_image = _sauvegarder_image(request.files.get("image"))
             except ValueError as e:
                 flash(str(e), "error")
-                return render_template("livres/form.html", livre=livre)
+                return render_template("livres/form.html", livre=livre, today=today)
             livre.auteur = auteur
             livre.annee_publication = annee
             if nouvelle_image:
@@ -273,7 +282,7 @@ def modifier_livre(titre):
             db.session.commit()
             flash("Livre modifié.", "success")
             return redirect(url_for("pages.detail_livre", titre=livre.titre))
-    return render_template("livres/form.html", livre=livre)
+    return render_template("livres/form.html", livre=livre, today=today)
 
 
 @pages_bp.route("/catalogue/<path:titre>/supprimer", methods=["POST"])

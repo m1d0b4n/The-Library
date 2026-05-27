@@ -2,6 +2,7 @@ import io
 import os
 import pytest
 import bcrypt
+from PIL import Image
 from app import create_app
 from models.livre import db, Livre
 from models.utilisateur import User
@@ -47,12 +48,10 @@ def _login(client, email, password="password123"):
 # --- Helpers pour créer des fichiers image de test ---
 
 def _png_bytes():
-    """PNG 1x1 pixel valide (bytes réels)."""
-    return (
-        b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01'
-        b'\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx'
-        b'\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
-    )
+    """PNG 1x1 pixel valide généré par Pillow."""
+    buf = io.BytesIO()
+    Image.new("RGB", (1, 1), color=(255, 0, 0)).save(buf, format="PNG")
+    return buf.getvalue()
 
 
 def _fake_bytes():

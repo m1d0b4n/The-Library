@@ -1,3 +1,4 @@
+import io
 import logging
 import os
 import uuid
@@ -5,6 +6,7 @@ import uuid
 import bcrypt
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from PIL import Image
 from werkzeug.utils import secure_filename
 from models.livre import db
 from models.utilisateur import User
@@ -34,8 +36,51 @@ def _detecter_mime(data: bytes) -> str | None:
     return None
 
 
+# Taille cible après compression (en octets)
+_TAILLE_MAX_FINALE = 500 * 1024  # 500 Ko
+_DIMENSION_MAX = 1200  # px (côté le plus long)
+
+
+def _compresser_image(data: bytes, ext: str) -> bytes:
+    """Redimensionne et compresse l'image pour qu'elle reste sous 500 Ko."""
+    try:
+        buf_in = io.BytesIO(data)
+        img = Image.open(buf_in)
+        img.load()  # force le chargement avant que le BytesIO soit perdu
+    except Exception:
+        # Si Pillow ne peut pas décoder, on retourne les données brutes telles quelles
+        return data
+
+    # Conversion RGBA/P → RGB pour JPEG (pas d'alpha en JPEG)
+    format_pil = "WEBP" if ext == "webp" else ("PNG" if ext == "png" else ("GIF" if ext == "gif" else "JPEG"))
+    if format_pil == "JPEG" and img.mode in ("RGBA", "P", "LA"):
+        img = img.convert("RGB")
+
+    # Redimensionnement si nécessaire
+    w, h = img.size
+    if max(w, h) > _DIMENSION_MAX:
+        ratio = _DIMENSION_MAX / max(w, h)
+        img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
+
+    # Compression itérative pour JPEG/WEBP
+    if format_pil in ("JPEG", "WEBP"):
+        qualite = 85
+        while qualite >= 40:
+            buf = io.BytesIO()
+            img.save(buf, format=format_pil, quality=qualite, optimize=True)
+            if buf.tell() <= _TAILLE_MAX_FINALE:
+                break
+            qualite -= 10
+        return buf.getvalue()
+
+    # PNG / GIF : compression sans perte de qualité
+    buf = io.BytesIO()
+    img.save(buf, format=format_pil, optimize=True)
+    return buf.getvalue()
+
+
 def _sauvegarder_image(fichier):
-    """Valide et sauvegarde une image uploadée. Renvoie le nom du fichier ou None si absent."""
+    """Valide, compresse et sauvegarde une image uploadée. Renvoie le nom du fichier ou None si absent."""
     if not fichier or fichier.filename == "":
         return None
 
@@ -47,6 +92,8 @@ def _sauvegarder_image(fichier):
     mime = _detecter_mime(data)
     if mime is None:
         raise ValueError("Le fichier n'est pas une image valide.")
+
+    data = _compresser_image(data, ext)
 
     nom = f"{uuid.uuid4().hex}.{ext}"
     chemin = os.path.join(current_app.config["UPLOAD_FOLDER"], nom)

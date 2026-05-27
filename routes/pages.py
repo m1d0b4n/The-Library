@@ -1,14 +1,58 @@
 import logging
+import os
+import uuid
 
 import bcrypt
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.utils import secure_filename
 from models.livre import db
 from models.utilisateur import User
 from models.livre import Livre
 
 pages_bp = Blueprint("pages", __name__)
 logger = logging.getLogger("the_library.pages")
+
+EXTENSIONS_AUTORISEES = {"jpg", "jpeg", "png", "webp", "gif"}
+
+_MAGIC = [
+    (b"\x89PNG\r\n\x1a\n", "png"),
+    (b"\xff\xd8\xff", "jpeg"),
+    (b"GIF87a", "gif"),
+    (b"GIF89a", "gif"),
+    (b"RIFF", "webp"),  # vérifié plus loin
+]
+
+
+def _detecter_mime(data: bytes) -> str | None:
+    """Détecte le type d'image à partir des magic bytes."""
+    for magic, mime in _MAGIC:
+        if data[:len(magic)] == magic:
+            if mime == "webp" and data[8:12] != b"WEBP":
+                return None
+            return mime
+    return None
+
+
+def _sauvegarder_image(fichier):
+    """Valide et sauvegarde une image uploadée. Renvoie le nom du fichier ou None si absent."""
+    if not fichier or fichier.filename == "":
+        return None
+
+    ext = fichier.filename.rsplit(".", 1)[-1].lower() if "." in fichier.filename else ""
+    if ext not in EXTENSIONS_AUTORISEES:
+        raise ValueError("Format non autorisé (JPG, PNG, WEBP, GIF uniquement).")
+
+    data = fichier.read()
+    mime = _detecter_mime(data)
+    if mime is None:
+        raise ValueError("Le fichier n'est pas une image valide.")
+
+    nom = f"{uuid.uuid4().hex}.{ext}"
+    chemin = os.path.join(current_app.config["UPLOAD_FOLDER"], nom)
+    with open(chemin, "wb") as f:
+        f.write(data)
+    return nom
 
 
 # --- Accueil ---
@@ -127,7 +171,15 @@ def ajouter_livre():
         elif Livre.query.filter_by(titre=titre).first():
             flash("Un livre avec ce titre existe déjà.", "error")
         else:
-            db.session.add(Livre(titre=titre, auteur=auteur, annee_publication=annee, created_by=current_user.email))
+            try:
+                image_filename = _sauvegarder_image(request.files.get("image"))
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template("livres/form.html", livre=None)
+            db.session.add(Livre(
+                titre=titre, auteur=auteur, annee_publication=annee,
+                created_by=current_user.email, image_filename=image_filename
+            ))
             db.session.commit()
             flash(f"« {titre} » ajouté avec succès.", "success")
             return redirect(url_for("pages.liste_livres"))
@@ -157,8 +209,20 @@ def modifier_livre(titre):
         elif annee < 1000 or annee > 2100:
             flash("Année hors limites (1000-2100).", "error")
         else:
+            try:
+                nouvelle_image = _sauvegarder_image(request.files.get("image"))
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template("livres/form.html", livre=livre)
             livre.auteur = auteur
             livre.annee_publication = annee
+            if nouvelle_image:
+                # Supprimer l'ancienne image si elle existe
+                if livre.image_filename:
+                    ancien = os.path.join(current_app.config["UPLOAD_FOLDER"], livre.image_filename)
+                    if os.path.isfile(ancien):
+                        os.remove(ancien)
+                livre.image_filename = nouvelle_image
             db.session.commit()
             flash("Livre modifié.", "success")
             return redirect(url_for("pages.detail_livre", titre=livre.titre))
@@ -175,6 +239,10 @@ def supprimer_livre(titre):
     if livre.created_by and livre.created_by != current_user.email:
         flash("Vous ne pouvez pas supprimer un livre qui ne vous appartient pas.", "error")
         return redirect(url_for("pages.detail_livre", titre=titre))
+    if livre.image_filename:
+        chemin = os.path.join(current_app.config["UPLOAD_FOLDER"], livre.image_filename)
+        if os.path.isfile(chemin):
+            os.remove(chemin)
     db.session.delete(livre)
     db.session.commit()
     logger.warning("Suppression livre : '%s' par %s", titre, current_user.email)

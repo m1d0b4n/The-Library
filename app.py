@@ -23,9 +23,13 @@ def create_app(config=None):
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", os.urandom(32))
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads", "livres")
+    app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 Mo max
 
     if config:
         app.config.update(config)
+
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     # Initialisation de la base de données
     db.init_app(app)

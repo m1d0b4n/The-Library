@@ -13,6 +13,7 @@ class Livre(db.Model):
     disponible = db.Column(db.Boolean, default=True, nullable=False)
     reserve_par = db.Column(db.String(200), nullable=True, default=None)
     created_by = db.Column(db.String(200), nullable=True, default=None)
+    image_filename = db.Column(db.String(300), nullable=True, default=None)
 
     def to_dict(self):
         return {

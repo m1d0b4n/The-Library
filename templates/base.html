@@ -179,5 +179,34 @@
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') fermerZoom(); });
   </script>
 
+  <script>
+    /* Spinner global sur tous les boutons submit */
+    document.addEventListener('submit', function(e) {
+      if (e.defaultPrevented) return;
+      var btn = e.target.querySelector('button[type="submit"]');
+      if (!btn) return;
+      var svg = btn.querySelector('svg');
+      var sizeClass = 'h-4 w-4';
+      if (svg) {
+        var m = svg.getAttribute('class').match(/h-[\d.]+\s+w-[\d.]+/);
+        if (m) sizeClass = m[0];
+      }
+      btn.disabled = true;
+      btn.style.opacity = '0.65';
+      btn.style.cursor = 'not-allowed';
+      var spinner = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      spinner.setAttribute('class', 'animate-spin ' + sizeClass);
+      spinner.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      spinner.setAttribute('fill', 'none');
+      spinner.setAttribute('viewBox', '0 0 24 24');
+      spinner.innerHTML = '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>';
+      if (svg) {
+        btn.replaceChild(spinner, svg);
+      } else {
+        btn.insertBefore(spinner, btn.firstChild);
+      }
+    });
+  </script>
+
 </body>
 </html>

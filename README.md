@@ -1,4 +1,3 @@
-# The Library
 
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=flat&logo=python&logoColor=F5CC27)
 ![Flask](https://img.shields.io/badge/Flask-3.0-F4320B?style=flat&logo=flask&logoColor=red)
